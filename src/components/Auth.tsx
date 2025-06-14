@@ -1,4 +1,3 @@
-
 import { useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -80,13 +79,14 @@ export default function Auth({ children }: { children?: ReactNode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/learning`,
       },
     });
     if (error) {
       toast.error(error.message);
+      setLoading(false);
     }
-    // No need to setLoading(false) here, as the page will redirect.
+    // No need to setLoading(false) on success, as the page will redirect.
   };
 
   if (loading && !session) {
