@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,7 +41,7 @@ const ContactForm: React.FC = () => {
         console.error("Supabase function error:", functionError);
         toast({
           title: "Error Sending Message",
-          description: `Failed to send message: ${functionError.message}. Please try again.`,
+          description: "There was an issue sending your message. Please try again later.",
           variant: "destructive",
         });
       } else {
@@ -118,4 +117,3 @@ const ContactForm: React.FC = () => {
 };
 
 export default ContactForm;
-

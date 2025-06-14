@@ -40,6 +40,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      console.error("Login failed:", error.message);
       toast.error(error.message);
       setLoading(false);
     } else {
@@ -62,6 +63,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
     });
 
     if (error) {
+      console.error("Signup failed:", error.message);
       toast.error(error.message);
     } else {
       toast.success("Signup successful! Please check your email to verify your account.");

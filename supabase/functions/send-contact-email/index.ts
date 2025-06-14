@@ -5,10 +5,13 @@ import { Resend } from "npm:resend@3.4.0"; // Updated to a recent version
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const DESTINATION_EMAIL = "omsri8032@gmail.com"; // User-provided email
 
-const corsHeaders = {
+const securityHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 };
 
 interface ContactFormData {
@@ -20,16 +23,16 @@ interface ContactFormData {
 serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: securityHeaders });
   }
 
   if (!RESEND_API_KEY) {
     console.error("RESEND_API_KEY is not set in environment variables.");
     return new Response(
-      JSON.stringify({ error: "Server configuration error: Missing API Key." }),
+      JSON.stringify({ error: "Server configuration error." }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   }
@@ -44,7 +47,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Missing name, email, or message in request body." }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json", ...securityHeaders },
         }
       );
     }
@@ -68,10 +71,10 @@ serve(async (req: Request) => {
     if (error) {
       console.error("Resend API Error:", error);
       return new Response(
-        JSON.stringify({ error: "Failed to send email.", details: error.message }),
+        JSON.stringify({ error: "Failed to send email." }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json", ...securityHeaders },
         }
       );
     }
@@ -81,16 +84,16 @@ serve(async (req: Request) => {
       JSON.stringify({ message: "Email sent successfully!", emailId: data?.id }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   } catch (e) {
     console.error("Error processing request:", e);
     return new Response(
-      JSON.stringify({ error: "An unexpected error occurred.", details: e.message }),
+      JSON.stringify({ error: "An unexpected error occurred." }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   }

@@ -23,6 +23,21 @@ export default function AvatarUpdater() {
       }
 
       const file = event.target.files[0];
+      
+      // Enhanced File Validation
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Invalid file type. Please upload a JPEG, PNG, or WEBP image.');
+        return;
+      }
+
+      if (file.size > maxFileSize) {
+        toast.error('File is too large. Maximum size is 5MB.');
+        return;
+      }
+      
       const fileExt = file.name.split('.').pop();
       const filePath = `${session.user.id}/${new Date().getTime()}.${fileExt}`;
 
@@ -57,9 +72,9 @@ export default function AvatarUpdater() {
       toast.success('Profile picture updated!');
 
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
+      console.error("Avatar upload error:", error);
+      // Sanitize error message
+      toast.error("Failed to update profile picture. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -88,7 +103,7 @@ export default function AvatarUpdater() {
         className="hidden" 
         onChange={uploadAvatar} 
         disabled={uploading} 
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp"
       />
     </div>
   );
