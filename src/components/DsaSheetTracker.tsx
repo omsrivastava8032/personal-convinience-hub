@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import { Loader2, ExternalLink } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
@@ -117,6 +118,10 @@ const DsaSheetTracker: React.FC = () => {
         ...topic,
         is_completed: progressMap.get(topic.id) || false,
     })) || [];
+
+    const completedCount = topicsWithCompletion.filter(t => t.is_completed).length;
+    const totalCount = topicsWithCompletion.length;
+    const overallProgress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
     
     const groupedTopics = topicsWithCompletion.reduce((acc, topic) => {
         (acc[topic.category] = acc[topic.category] || []).push(topic);
@@ -129,35 +134,62 @@ const DsaSheetTracker: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            {Object.entries(groupedTopics).map(([category, topicsInCategory]) => (
-                <Card key={category}>
-                    <CardHeader>
-                        <CardTitle>{category}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        {topicsInCategory.map(topic => (
-                            <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
-                                <div className="flex items-center gap-4">
-                                     <Checkbox
-                                        id={topic.id}
-                                        checked={topic.is_completed}
-                                        onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
-                                        disabled={updateProgressMutation.isPending}
-                                    />
-                                    <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
-                                </div>
-                                {topic.problem_url && (
-                                    <Button variant="ghost" size="icon" asChild>
-                                        <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
-                                            <ExternalLink />
-                                        </a>
-                                    </Button>
-                                )}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Overall Progress</CardTitle>
+                    <CardDescription>
+                        You've completed {completedCount} out of {totalCount} topics. Keep going!
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Progress value={overallProgress} className="w-full" />
+                    <p className="text-sm text-muted-foreground mt-2 text-right">
+                        {Math.round(overallProgress)}% Complete
+                    </p>
+                </CardContent>
+            </Card>
+
+            {Object.entries(groupedTopics).map(([category, topicsInCategory]) => {
+                const categoryCompletedCount = topicsInCategory.filter(t => t.is_completed).length;
+                const categoryTotalCount = topicsInCategory.length;
+                const categoryProgress = categoryTotalCount > 0 ? (categoryCompletedCount / categoryTotalCount) * 100 : 0;
+
+                return (
+                    <Card key={category}>
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <CardTitle>{category}</CardTitle>
+                                <span className="text-sm font-medium text-muted-foreground">
+                                    {categoryCompletedCount} / {categoryTotalCount}
+                                </span>
                             </div>
-                        ))}
-                    </CardContent>
-                </Card>
-            ))}
+                             <Progress value={categoryProgress} className="mt-2" />
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {topicsInCategory.map(topic => (
+                                <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
+                                    <div className="flex items-center gap-4">
+                                         <Checkbox
+                                            id={topic.id}
+                                            checked={topic.is_completed}
+                                            onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
+                                            disabled={updateProgressMutation.isPending}
+                                        />
+                                        <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
+                                    </div>
+                                    {topic.problem_url && (
+                                        <Button variant="ghost" size="icon" asChild>
+                                            <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
+                                                <ExternalLink />
+                                            </a>
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                );
+            })}
         </div>
     );
 };
