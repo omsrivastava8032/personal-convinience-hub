@@ -1,18 +1,40 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText } from 'lucide-react'; // Added FileText for Resume
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import type { Session } from '@supabase/supabase-js';
 
 const navItems = [
   { name: 'Home', path: '/', icon: Home },
   { name: 'Projects', path: '/projects', icon: Briefcase },
   { name: 'Blog', path: '/blog', icon: BookOpen },
-  { name: 'Learning', path: '/learning', icon: FileText }, // Changed icon for Learning
+  { name: 'Learning', path: '/learning', icon: FileText },
   { name: 'Resume & Contact', path: '/resume', icon: MessageSquare },
 ];
 
 const Navbar: React.FC = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
   return (
     <nav className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -30,6 +52,19 @@ const Navbar: React.FC = () => {
                 </Link>
               </Button>
             ))}
+            {session ? (
+              <Button variant="ghost" onClick={handleLogout} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                <LogOut size={18} className="hidden sm:inline-block" />
+                <span>Logout</span>
+              </Button>
+            ) : (
+              <Button variant="ghost" asChild>
+                <Link to="/auth" className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                  <LogIn size={18} className="hidden sm:inline-block" />
+                  <span>Login</span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>

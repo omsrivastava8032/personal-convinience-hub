@@ -9,7 +9,65 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      dsa_topics: {
+        Row: {
+          category: string
+          id: string
+          order: number
+          problem_url: string | null
+          topic_name: string
+        }
+        Insert: {
+          category: string
+          id?: string
+          order?: number
+          problem_url?: string | null
+          topic_name: string
+        }
+        Update: {
+          category?: string
+          id?: string
+          order?: number
+          problem_url?: string | null
+          topic_name?: string
+        }
+        Relationships: []
+      }
+      user_dsa_progress: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_dsa_progress_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "dsa_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

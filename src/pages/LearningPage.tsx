@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, BookCopy, Youtube, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import DsaSheetTracker from '@/components/DsaSheetTracker';
 
 const LearningPage: React.FC = () => {
-  const dsaSheetUrl = "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/";
   const cheatSheets = [
     { title: 'Git Commands', description: 'Essential Git commands for version control.', link: '#' },
     { title: 'SQL Cheatsheet', description: 'Quick reference for common SQL queries.', link: '#' },
@@ -27,21 +28,9 @@ const LearningPage: React.FC = () => {
       <section id="dsa">
         <h2 className="text-2xl font-semibold mb-4 flex items-center">
           <BookCopy className="mr-3 h-6 w-6 text-primary" />
-          Striver’s DSA Sheet
+          Striver’s A2Z DSA Sheet Tracker
         </h2>
-        <Card>
-          <CardContent className="p-6 flex flex-col items-start gap-4">
-            <p className="text-muted-foreground">
-              This links to the official Striver's A2Z DSA Course Sheet. The source website does not permit direct embedding.
-            </p>
-            <Button asChild>
-              <a href={dsaSheetUrl} target="_blank" rel="noopener noreferrer">
-                Open DSA Sheet in New Tab
-                <ExternalLink className="ml-2" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
+        <DsaSheetTracker />
       </section>
 
       <section>
