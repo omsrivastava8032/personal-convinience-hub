@@ -48,7 +48,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .maybeSingle();
 
       if (error) {
-        throw error;
+        console.error('AuthProvider - error fetching profile:', error);
+        toast.error(`Error fetching profile: ${error.message}`);
+        setProfile(null);
+        setAvatarUrl(null);
+        return; // Stop execution for this function
       }
       if (data) {
         console.log('AuthProvider - profile data fetched:', data);
@@ -60,10 +64,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAvatarUrl(null);
       }
     } catch (error) {
-      console.error('AuthProvider - error fetching profile:', error);
+      console.error('AuthProvider - CATCH BLOCK error fetching profile:', error);
       if (error instanceof Error) {
-        toast.error(`Error fetching profile: ${error.message}`);
+        toast.error(`A problem occurred loading your profile: ${error.message}`);
       }
+      setProfile(null);
+      setAvatarUrl(null);
     }
   }, []);
 

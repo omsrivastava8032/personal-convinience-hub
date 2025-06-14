@@ -1,4 +1,3 @@
-
 import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import QuickLinkCard from '@/components/QuickLinkCard';
@@ -23,13 +22,8 @@ const SectionTitle: React.FC<{children: React.ReactNode}> = ({ children }) => (
 );
 
 const HomePage: React.FC = () => {
-  const { session, loading } = useAuth();
+  const { session } = useAuth();
   
-  console.log('=== HOMEPAGE DEBUG ===');
-  console.log('HomePage - session exists:', !!session);
-  console.log('HomePage - loading:', loading);
-  console.log('HomePage - will show calendar section:', !!session);
-
   return (
     <div className="space-y-16">
       <WelcomeBanner />
@@ -39,42 +33,17 @@ const HomePage: React.FC = () => {
         <SectionTitle>Quick Links</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {quickLinks.map(link => (
-            <QuickLinkCard key={link.title} title={link.title} href={link.href} icon={link.icon} description={link.description} />
+            <QuickLinkCard key={link.title} href={link.href} icon={link.icon} description={link.description} />
           ))}
         </div>
       </section>
 
-      <section className="bg-yellow-100 dark:bg-yellow-900 rounded-lg p-6">
-        <SectionTitle>My Calendar (debug mode)</SectionTitle>
-        <div className="mb-4">
-          <div className="font-mono text-xs">
-            <span className="font-bold">session:</span>
-            <pre className="overflow-x-auto bg-yellow-200 dark:bg-yellow-800 p-2 rounded">
-              {JSON.stringify(session, null, 2)}
-            </pre>
-          </div>
-          <div className="font-mono text-xs">
-            <span className="font-bold">loading:</span>
-            <pre className="overflow-x-auto bg-yellow-200 dark:bg-yellow-800 p-2 rounded">
-              {JSON.stringify(loading, null, 2)}
-            </pre>
-          </div>
-        </div>
-        {/* Original conditional rendering untouched */}
-        {session ? (
-          <div>
-            <p className="text-sm text-muted-foreground mb-4">You are logged in. Calendar should appear below:</p>
-            <GoogleCalendar />
-          </div>
-        ) : (
-          <div>
-            <p className="text-sm text-muted-foreground mb-4">Please log in to view your calendar:</p>
-            <Auth>
-              <GoogleCalendar />
-            </Auth>
-          </div>
-        )}
-      </section>
+      {session && (
+        <section>
+          <SectionTitle>My Calendar</SectionTitle>
+          <GoogleCalendar />
+        </section>
+      )}
 
       <TodaysSnapshot />
       <Scratchpad />
@@ -83,4 +52,3 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
-
