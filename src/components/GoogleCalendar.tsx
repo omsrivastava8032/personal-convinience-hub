@@ -9,6 +9,7 @@ import { Loader2, AlertCircle, ExternalLink } from 'lucide-react';
 import { format, parseISO, isSameDay } from 'date-fns';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/providers/AuthProvider';
 
 interface CalendarEvent {
   id: string;
@@ -25,9 +26,11 @@ interface CalendarEvent {
 }
 
 const fetchGoogleCalendarEvents = async () => {
+  console.log('Fetching Google Calendar events...');
   const { data, error } = await supabase.functions.invoke('get-google-calendar-events');
 
   if (error) {
+    console.error('Supabase function error:', error);
     // Handle Supabase Edge Function-specific errors
     if (error.message.includes("Function not found")) {
       throw new Error("The calendar feature is not available right now. Please try again later.");
@@ -37,6 +40,7 @@ const fetchGoogleCalendarEvents = async () => {
 
   // Handle errors returned from within the function logic
   if (data?.error) {
+    console.error('Function returned error:', data.error);
     throw new Error(data.error);
   }
 
@@ -45,15 +49,21 @@ const fetchGoogleCalendarEvents = async () => {
     throw new Error('Received an unexpected response from the server.');
   }
 
+  console.log('Successfully fetched calendar events:', data.length);
   return data as CalendarEvent[];
 };
 
 const GoogleCalendar: React.FC = () => {
   const navigate = useNavigate();
+  const { session, user } = useAuth();
+  
+  console.log('GoogleCalendar component - session:', !!session, 'user:', !!user);
+  
   const { data: events, isLoading, error, isError } = useQuery<CalendarEvent[], Error>({
     queryKey: ['googleCalendarEvents'],
     queryFn: fetchGoogleCalendarEvents,
     retry: false, // Don't retry on failure, better to show error message
+    enabled: !!session && !!user, // Only run query if user is authenticated
   });
 
   const eventDays = React.useMemo(() => {
@@ -76,7 +86,21 @@ const GoogleCalendar: React.FC = () => {
     });
   }, [events, selectedDay]);
 
+  if (!session || !user) {
+    console.log('No session or user found');
+    return (
+      <Alert>
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Authentication Required</AlertTitle>
+        <AlertDescription>
+          Please sign in to view your Google Calendar events.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   if (isLoading) {
+    console.log('Loading calendar events...');
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -86,6 +110,7 @@ const GoogleCalendar: React.FC = () => {
   }
 
   if (isError) {
+    console.error('Calendar error:', error);
     const isNotLinked = error.message === 'Google Calendar not linked.';
     return (
       <Alert variant="destructive" className="max-w-xl mx-auto">
@@ -112,6 +137,8 @@ const GoogleCalendar: React.FC = () => {
       </Alert>
     );
   }
+
+  console.log('Rendering calendar with events:', events?.length || 0);
 
   return (
     <div className="grid lg:grid-cols-2 gap-8 items-start">

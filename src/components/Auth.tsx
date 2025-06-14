@@ -17,8 +17,11 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  console.log('Auth component - session:', !!session, 'authLoading:', authLoading, 'children:', !!children);
+
   useEffect(() => {
     if (session && !children) {
+      console.log('Auth: Redirecting to home because user is logged in');
       navigate('/');
     }
   }, [session, children, navigate]);
@@ -26,6 +29,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
+    console.log('Attempting login...');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
@@ -33,6 +37,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
       toast.error(error.message);
       setLoading(false);
     } else {
+      console.log('Login successful!');
       toast.success("Logged in successfully!");
     }
   };
@@ -40,6 +45,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const handleSignup = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setLoading(true);
+    console.log('Attempting signup...');
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -52,6 +58,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
       console.error("Signup failed:", error.message);
       toast.error(error.message);
     } else {
+      console.log('Signup successful!');
       toast.success("Signup successful! Please check your email to verify your account.");
     }
     setLoading(false);
@@ -59,6 +66,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    console.log('Attempting Google login...');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -67,8 +75,11 @@ export default function Auth({ children }: { children?: ReactNode }) {
       },
     });
     if (error) {
+      console.error("Google login failed:", error.message);
       toast.error(error.message);
       setLoading(false);
+    } else {
+      console.log('Google login initiated...');
     }
     // No need to setLoading(false) on success, as the page will redirect.
   };
@@ -76,6 +87,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const isFormSubmitting = loading || authLoading;
 
   if (authLoading) {
+    console.log('Auth: Showing loading spinner');
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -84,10 +96,12 @@ export default function Auth({ children }: { children?: ReactNode }) {
   }
 
   if (session && children) {
+    console.log('Auth: User is logged in, showing children');
     return <>{children}</>;
   }
   
   if (!session) {
+    console.log('Auth: User is not logged in, showing login form');
     return (
       <Card className="w-full max-w-sm mx-auto">
         <CardHeader className="text-center">
@@ -132,5 +146,6 @@ export default function Auth({ children }: { children?: ReactNode }) {
     );
   }
 
+  console.log('Auth: Fallback return null');
   return null;
 }
