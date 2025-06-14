@@ -4,13 +4,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import PomodoroTimer from './PomodoroTimer';
 import { CalendarDays } from 'lucide-react';
 import WorkingOn from './WorkingOn';
-import CountdownTimer from './CountdownTimer';
 
 const TodaysSnapshot: React.FC = () => {
   return (
     <section>
       <h2 className="text-3xl font-bold tracking-tight mb-6 text-center sm:text-left">Today's Snapshot</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <WorkingOn />
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -23,7 +22,6 @@ const TodaysSnapshot: React.FC = () => {
           </CardContent>
         </Card>
         <PomodoroTimer />
-        <CountdownTimer />
       </div>
     </section>
   );

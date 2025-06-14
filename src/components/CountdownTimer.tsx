@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { AlarmClock } from 'lucide-react';
 
 interface TimeLeft {
   days: number;
@@ -38,33 +38,32 @@ const CountdownTimer: React.FC = () => {
   const formatUnit = (value: number) => String(value).padStart(2, '0');
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">Countdown to Mar 1, 2026</CardTitle>
-        <AlarmClock className="h-5 w-5 text-muted-foreground" />
+    <Card className="border-primary/20 shadow-lg">
+      <CardHeader className="items-center pb-2">
+        <CardTitle className="text-xl font-semibold tracking-tight text-center">Countdown to Mar 1, 2026</CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
         {timeLeft ? (
-          <div className="grid grid-cols-4 gap-2 text-center tabular-nums">
-            <div>
-              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{timeLeft.days}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-widest">Days</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center tabular-nums">
+            <div className="flex flex-col p-4 rounded-lg bg-secondary/50">
+              <div className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{timeLeft.days}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Days</div>
             </div>
-            <div>
-              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.hours)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-widest">Hours</div>
+            <div className="flex flex-col p-4 rounded-lg bg-secondary/50">
+              <div className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.hours)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Hours</div>
             </div>
-            <div>
-              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.minutes)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-widest">Minutes</div>
+            <div className="flex flex-col p-4 rounded-lg bg-secondary/50">
+              <div className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.minutes)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Minutes</div>
             </div>
-            <div>
-              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.seconds)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-widest">Seconds</div>
+            <div className="flex flex-col p-4 rounded-lg bg-secondary/50">
+              <div className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.seconds)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Seconds</div>
             </div>
           </div>
         ) : (
-          <p className="text-center text-muted-foreground">The time has come!</p>
+          <p className="text-center text-xl text-muted-foreground py-10">The time has come!</p>
         )}
       </CardContent>
     </Card>

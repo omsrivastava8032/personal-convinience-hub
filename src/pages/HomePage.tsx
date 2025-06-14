@@ -5,6 +5,7 @@ import QuickLinkCard from '@/components/QuickLinkCard';
 import TodaysSnapshot from '@/components/TodaysSnapshot';
 import { Github, Linkedin, BookOpen, ListChecks } from 'lucide-react';
 import Scratchpad from '@/components/Scratchpad';
+import CountdownTimer from '@/components/CountdownTimer';
 
 const quickLinks = [
   { title: "Striver's DSA Sheet", href: "/learning#dsa", icon: ListChecks, description: "Track my DSA progress on the sheet." },
@@ -22,6 +23,8 @@ const HomePage: React.FC = () => {
     <div className="space-y-16">
       <WelcomeBanner name="OM Srivastava" bio="Passionate developer building things for the web. This hub is my personal corner of the internet to stay organized and track my progress." />
       
+      <CountdownTimer />
+
       <section>
         <SectionTitle>Quick Links</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
