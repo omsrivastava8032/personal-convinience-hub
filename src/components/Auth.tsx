@@ -1,4 +1,3 @@
-
 import { useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -61,7 +60,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/learning`,
+        emailRedirectTo: `${window.location.origin}`,
       },
     });
 
