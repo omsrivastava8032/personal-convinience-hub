@@ -1,4 +1,3 @@
-
 import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import QuickLinkCard from '@/components/QuickLinkCard';
@@ -21,7 +20,7 @@ const SectionTitle: React.FC<{children: React.ReactNode}> = ({ children }) => (
 const HomePage: React.FC = () => {
   return (
     <div className="space-y-16">
-      <WelcomeBanner name="OM Srivastava" bio="Passionate developer building things for the web. This hub is my personal corner of the internet to stay organized and track my progress." />
+      <WelcomeBanner />
       
       <CountdownTimer />
 
