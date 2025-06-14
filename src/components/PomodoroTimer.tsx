@@ -29,7 +29,7 @@ const PomodoroTimer: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let interval: number | undefined = undefined;
+    let interval: NodeJS.Timeout | undefined = undefined;
 
     if (isActive && time > 0) {
       interval = setInterval(() => {
