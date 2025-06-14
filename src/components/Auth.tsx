@@ -17,6 +17,9 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Your app\'s origin is:', window.location.origin);
+    console.log('Please ensure your Supabase redirect URL is set to:', `${window.location.origin}/learning`);
+    
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
