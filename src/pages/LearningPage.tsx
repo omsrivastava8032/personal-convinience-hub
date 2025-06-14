@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Search, BookCopy, Youtube, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const LearningPage: React.FC = () => {
-  const dsaSheetEmbedUrl = "YOUR_DSA_SHEET_EMBED_URL_HERE"; // Replace with your actual Google Sheet or PDF embed URL
+  const dsaSheetUrl = "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/";
   const cheatSheets = [
     { title: 'Git Commands', description: 'Essential Git commands for version control.', link: '#' },
     { title: 'SQL Cheatsheet', description: 'Quick reference for common SQL queries.', link: '#' },
@@ -31,26 +30,16 @@ const LearningPage: React.FC = () => {
           Striver’s DSA Sheet
         </h2>
         <Card>
-          <CardContent className="p-6">
-            <p className="text-muted-foreground mb-4">
-              This section is intended to embed Striver's DSA Sheet. Please replace
-              <code>YOUR_DSA_SHEET_EMBED_URL_HERE</code> in the code with your actual embeddable link (e.g., a Google Sheet published to the web, or a direct PDF link if your hosting allows embedding).
+          <CardContent className="p-6 flex flex-col items-start gap-4">
+            <p className="text-muted-foreground">
+              This links to the official Striver's A2Z DSA Course Sheet. The source website does not permit direct embedding.
             </p>
-            {dsaSheetEmbedUrl === "YOUR_DSA_SHEET_EMBED_URL_HERE" ? (
-              <div className="mt-4 h-96 bg-muted rounded flex items-center justify-center">
-                <p className="text-muted-foreground italic text-center">
-                  DSA Sheet embed area. <br />
-                  Provide a URL to embed the content.
-                </p>
-              </div>
-            ) : (
-              <iframe
-                src={dsaSheetEmbedUrl}
-                title="Striver's DSA Sheet"
-                className="w-full h-96 border-0 rounded"
-                allowFullScreen
-              ></iframe>
-            )}
+            <Button asChild>
+              <a href={dsaSheetUrl} target="_blank" rel="noopener noreferrer">
+                Open DSA Sheet in New Tab
+                <ExternalLink className="ml-2" />
+              </a>
+            </Button>
           </CardContent>
         </Card>
       </section>
@@ -124,4 +113,3 @@ const LearningPage: React.FC = () => {
 };
 
 export default LearningPage;
-
