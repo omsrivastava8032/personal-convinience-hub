@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,6 +9,12 @@ import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import { Loader2, ExternalLink } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type Topic = {
     id: string;
@@ -149,47 +154,55 @@ const DsaSheetTracker: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {Object.entries(groupedTopics).map(([category, topicsInCategory]) => {
-                const categoryCompletedCount = topicsInCategory.filter(t => t.is_completed).length;
-                const categoryTotalCount = topicsInCategory.length;
-                const categoryProgress = categoryTotalCount > 0 ? (categoryCompletedCount / categoryTotalCount) * 100 : 0;
+            <Accordion type="multiple" className="w-full space-y-4">
+                {Object.entries(groupedTopics).map(([category, topicsInCategory]) => {
+                    const categoryCompletedCount = topicsInCategory.filter(t => t.is_completed).length;
+                    const categoryTotalCount = topicsInCategory.length;
+                    const categoryProgress = categoryTotalCount > 0 ? (categoryCompletedCount / categoryTotalCount) * 100 : 0;
 
-                return (
-                    <Card key={category}>
-                        <CardHeader>
-                            <div className="flex justify-between items-center">
-                                <CardTitle>{category}</CardTitle>
-                                <span className="text-sm font-medium text-muted-foreground">
-                                    {categoryCompletedCount} / {categoryTotalCount}
-                                </span>
-                            </div>
-                             <Progress value={categoryProgress} className="mt-2" />
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {topicsInCategory.map(topic => (
-                                <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
-                                    <div className="flex items-center gap-4">
-                                         <Checkbox
-                                            id={topic.id}
-                                            checked={topic.is_completed}
-                                            onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
-                                            disabled={updateProgressMutation.isPending}
-                                        />
-                                        <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
+                    return (
+                        <AccordionItem value={category} key={category} className="border-none">
+                             <Card>
+                                <AccordionTrigger className="p-6 hover:no-underline text-left">
+                                    <div className="w-full">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-lg font-semibold">{category}</h3>
+                                            <span className="text-sm font-medium text-muted-foreground">
+                                                {categoryCompletedCount} / {categoryTotalCount}
+                                            </span>
+                                        </div>
+                                        <Progress value={categoryProgress} className="mt-2" />
                                     </div>
-                                    {topic.problem_url && (
-                                        <Button variant="ghost" size="icon" asChild>
-                                            <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
-                                                <ExternalLink />
-                                            </a>
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-                );
-            })}
+                                </AccordionTrigger>
+                                <AccordionContent className="px-6 pb-6">
+                                    <div className="space-y-2 pt-4 border-t">
+                                        {topicsInCategory.map(topic => (
+                                            <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
+                                                <div className="flex items-center gap-4">
+                                                     <Checkbox
+                                                        id={topic.id}
+                                                        checked={topic.is_completed}
+                                                        onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
+                                                        disabled={updateProgressMutation.isPending}
+                                                    />
+                                                    <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
+                                                </div>
+                                                {topic.problem_url && (
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
+                                                            <ExternalLink className="h-4 w-4" />
+                                                        </a>
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </Card>
+                        </AccordionItem>
+                    );
+                })}
+            </Accordion>
         </div>
     );
 };
