@@ -7,13 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from '@/providers/AuthProvider';
 
-const navItems = [
-  { name: 'Home', path: '/', icon: Home },
-  { name: 'Projects', path: '/projects', icon: Briefcase },
-  { name: 'Blog', path: '/blog', icon: BookOpen },
-  { name: 'Learning', path: '/learning', icon: FileText },
-  { name: 'Calendar', path: '/calendar', icon: Calendar },
-  { name: 'Resume & Contact', path: '/resume', icon: MessageSquare },
+const navItemsConfig = [
+  { name: 'Home', path: '/', icon: Home, private: false },
+  { name: 'Projects', path: '/projects', icon: Briefcase, private: false },
+  { name: 'Blog', path: '/blog', icon: BookOpen, private: false },
+  { name: 'Learning', path: '/learning', icon: FileText, private: false },
+  { name: 'Calendar', path: '/calendar', icon: Calendar, private: true },
+  { name: 'Resume & Contact', path: '/resume', icon: MessageSquare, private: false },
 ];
 
 const Navbar: React.FC = () => {
@@ -24,6 +24,8 @@ const Navbar: React.FC = () => {
     await supabase.auth.signOut();
     navigate('/');
   };
+  
+  const navItems = navItemsConfig.filter(item => !item.private || (item.private && session));
 
   return (
     <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
