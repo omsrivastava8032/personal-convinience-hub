@@ -1,12 +1,16 @@
+
 import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import QuickLinkCard from '@/components/QuickLinkCard';
 import TodaysSnapshot from '@/components/TodaysSnapshot';
-import { Github, Linkedin, GraduationCap, ListChecks } from 'lucide-react';
+import { Github, Linkedin, GraduationCap, ListChecks, Calendar } from 'lucide-react';
 import Scratchpad from '@/components/Scratchpad';
 import CountdownTimer from '@/components/CountdownTimer';
+import GoogleCalendar from '@/components/GoogleCalendar';
+import Auth from '@/components/Auth';
 
 const quickLinks = [
+  { title: "Calendar", href: "/calendar", icon: Calendar, description: "View your Google Calendar events." },
   { title: "Striver's DSA Sheet", href: "/learning#dsa", icon: ListChecks, description: "Track my DSA progress on the sheet." },
   { title: "GitHub Profile", href: "https://github.com/omsri8032", icon: Github, description: "View my code & contributions." },
   { title: "LinkedIn Profile", href: "https://www.linkedin.com/in/om-srivastava-4a169a249", icon: Linkedin, description: "Connect with me professionally." },
@@ -26,11 +30,18 @@ const HomePage: React.FC = () => {
 
       <section>
         <SectionTitle>Quick Links</SectionTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {quickLinks.map(link => (
             <QuickLinkCard key={link.title} title={link.title} href={link.href} icon={link.icon} description={link.description} />
           ))}
         </div>
+      </section>
+
+      <section>
+        <SectionTitle>My Calendar</SectionTitle>
+        <Auth>
+          <GoogleCalendar />
+        </Auth>
       </section>
 
       <TodaysSnapshot />

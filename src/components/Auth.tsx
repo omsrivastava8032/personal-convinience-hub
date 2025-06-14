@@ -19,7 +19,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
 
   useEffect(() => {
     if (session && !children) {
-      navigate('/calendar');
+      navigate('/');
     }
   }, [session, children, navigate]);
 
@@ -62,7 +62,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/calendar`,
+        redirectTo: `${window.location.origin}/`,
         scopes: 'https://www.googleapis.com/auth/calendar.readonly',
       },
     });
