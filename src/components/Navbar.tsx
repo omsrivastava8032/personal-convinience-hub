@@ -5,6 +5,7 @@ import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText, LogIn, LogOu
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import type { Session } from '@supabase/supabase-js';
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { name: 'Home', path: '/', icon: Home },
@@ -41,9 +42,9 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
             <Code2 size={28} />
-            <span className="font-semibold text-xl">Portfolio Hub</span>
+            <span className="font-semibold text-xl">Personal Convenience Hub</span>
           </Link>
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1">
             {navItems.map((item) => (
               <Button key={item.name} variant="ghost" asChild>
                 <Link to={item.path} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
@@ -65,6 +66,7 @@ const Navbar: React.FC = () => {
                 </Link>
               </Button>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </div>

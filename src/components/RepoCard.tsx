@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, GitFork, ExternalLink, Github } from 'lucide-react';
+import { Star, ExternalLink, Github } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface RepoCardProps {
   name: string;
@@ -15,20 +16,23 @@ interface RepoCardProps {
 }
 
 const RepoCard: React.FC<RepoCardProps> = ({ name, description, stars, lastCommit, tech, repoUrl, demoUrl }) => {
+  const lastCommitDate = new Date(lastCommit);
+  const timeAgo = formatDistanceToNow(lastCommitDate, { addSuffix: true });
+  
   return (
     <Card className="flex flex-col h-full hover:shadow-xl transition-shadow duration-300">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-primary">{name}</CardTitle>
         <CardDescription className="h-20 overflow-hidden text-ellipsis">{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow space-y-3">
+      <CardContent className="flex-grow space-y-4">
         <div className="flex items-center text-sm text-muted-foreground">
           <Star className="w-4 h-4 mr-1 text-yellow-400" /> {stars} stars
           <span className="mx-2">·</span>
-          Updated {lastCommit}
+          Updated {timeAgo}
         </div>
         <div className="flex flex-wrap gap-2">
-          {tech.map(tag => (
+          {tech.slice(0, 5).map(tag => (
             <span key={tag} className="px-2 py-0.5 text-xs bg-secondary text-secondary-foreground rounded-full">{tag}</span>
           ))}
         </div>

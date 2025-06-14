@@ -3,19 +3,20 @@ import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import QuickLinkCard from '@/components/QuickLinkCard';
 import TodaysSnapshot from '@/components/TodaysSnapshot';
-import { Github, FileText, BookOpen, ListChecks } from 'lucide-react';
+import { Github, Linkedin, BookOpen, ListChecks } from 'lucide-react';
+import Scratchpad from '@/components/Scratchpad';
 
 const quickLinks = [
-  { title: "GitHub Profile", href: "#", icon: Github, description: "View my code & contributions." },
-  { title: "Download Resume", href: "#", icon: FileText, description: "Get my latest CV." },
-  { title: "Blog Posts", href: "/blog", icon: BookOpen, description: "Read my thoughts & articles." },
-  { title: "DSA Sheet", href: "/learning#dsa", icon: ListChecks, description: "Track my DSA progress." },
+  { title: "Striver's DSA Sheet", href: "/learning#dsa", icon: ListChecks, description: "Track my DSA progress on the sheet." },
+  { title: "GitHub Profile", href: "https://github.com/omsri8032", icon: Github, description: "View my code & contributions." },
+  { title: "LinkedIn Profile", href: "https://www.linkedin.com/in/om-srivastava-4a169a249", icon: Linkedin, description: "Connect with me professionally." },
+  { title: "Personal Cheat-sheets", href: "/learning", icon: BookOpen, description: "My collection of notes and resources." },
 ];
 
 const HomePage: React.FC = () => {
   return (
     <div className="space-y-12">
-      <WelcomeBanner name="Your Name" bio="Passionate developer creating impactful solutions. Exploring new technologies and building cool projects." />
+      <WelcomeBanner name="OM Srivastava" bio="Passionate developer building things for the web. This hub is my personal corner of the internet to stay organized and track my progress." />
       
       <section>
         <h2 className="text-3xl font-semibold mb-6 text-center sm:text-left">Quick Links</h2>
@@ -27,6 +28,8 @@ const HomePage: React.FC = () => {
       </section>
 
       <TodaysSnapshot />
+      
+      <Scratchpad />
     </div>
   );
 };
