@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +30,7 @@ const ContactForm: React.FC = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    form.formState.isSubmitting = true; // Manually set submitting state
+    // form.formState.isSubmitting is managed by react-hook-form, no need to set it manually
     console.log("Form submission started:", data);
 
     try {
@@ -60,11 +61,10 @@ const ContactForm: React.FC = () => {
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      form.formState.isSubmitting = false; // Manually reset submitting state
-      // Trigger re-render if needed, though react-hook-form should handle this with form.formState.isSubmitting
-      form.trigger(); // Optionally trigger validation to refresh form state display
     }
+    // react-hook-form will automatically set isSubmitting to false after the async onSubmit handler completes or errors.
+    // The form.trigger() call in the finally block is likely not needed for isSubmitting state,
+    // but can be kept if other re-validation behavior is desired. For now, let's remove it to simplify.
   };
 
   return (
@@ -118,3 +118,4 @@ const ContactForm: React.FC = () => {
 };
 
 export default ContactForm;
+
