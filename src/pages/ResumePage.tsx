@@ -1,28 +1,23 @@
 
 import React from 'react';
 import ContactForm from '@/components/ContactForm';
-import { Button } from '@/components/ui/button';
-import { Download, Linkedin, Twitter, Github, Mail } from 'lucide-react';
+import { Linkedin, Twitter, Github, Mail } from 'lucide-react';
+import Auth from '@/components/Auth';
+import ResumeVault from '@/components/ResumeVault';
 
 const ResumePage: React.FC = () => {
   return (
     <div className="space-y-12">
       <header className="text-center">
         <h1 className="text-4xl font-bold text-primary">Resume & Contact</h1>
-        <p className="mt-2 text-lg text-muted-foreground">Get in touch or download my latest resume.</p>
+        <p className="mt-2 text-lg text-muted-foreground">Manage your resumes and get in touch.</p>
       </header>
-
-      <section className="max-w-2xl mx-auto text-center">
-        <h2 className="text-2xl font-semibold mb-4">Download My Resume</h2>
-        <Button size="lg" asChild>
-          {/* Replace '#' with the actual link to your resume PDF */}
-          <a href="#" download="YourName_Resume.pdf"> 
-            <Download className="mr-2 h-5 w-5" /> Download PDF
-          </a>
-        </Button>
-        <p className="mt-3 text-sm text-muted-foreground">
-          (Placeholder: Click to download a sample PDF)
-        </p>
+      
+      <section className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-semibold mb-6 text-center">Resume/CV Vault</h2>
+        <Auth>
+          <ResumeVault />
+        </Auth>
       </section>
 
       <section className="max-w-2xl mx-auto">
