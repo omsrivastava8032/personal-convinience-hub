@@ -1,3 +1,4 @@
+
 import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import QuickLinkCard from '@/components/QuickLinkCard';
@@ -33,7 +34,7 @@ const HomePage: React.FC = () => {
         <SectionTitle>Quick Links</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {quickLinks.map(link => (
-            <QuickLinkCard key={link.title} href={link.href} icon={link.icon} description={link.description} />
+            <QuickLinkCard key={link.title} title={link.title} href={link.href} icon={link.icon} description={link.description} />
           ))}
         </div>
       </section>
