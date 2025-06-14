@@ -17,11 +17,16 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  console.log('Auth component - session:', !!session, 'authLoading:', authLoading, 'children:', !!children);
+  console.log('=== AUTH COMPONENT DEBUG ===');
+  console.log('Auth component - session exists:', !!session);
+  console.log('Auth component - session details:', session ? { user_id: session.user?.id, expires_at: session.expires_at } : 'null');
+  console.log('Auth component - authLoading:', authLoading);
+  console.log('Auth component - children provided:', !!children);
+  console.log('Auth component - current time:', new Date().toISOString());
 
   useEffect(() => {
     if (session && !children) {
-      console.log('Auth: Redirecting to home because user is logged in');
+      console.log('Auth: Redirecting to home because user is logged in and no children');
       navigate('/');
     }
   }, [session, children, navigate]);
@@ -87,7 +92,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
   const isFormSubmitting = loading || authLoading;
 
   if (authLoading) {
-    console.log('Auth: Showing loading spinner');
+    console.log('Auth: Showing loading spinner because authLoading is true');
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -96,7 +101,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
   }
 
   if (session && children) {
-    console.log('Auth: User is logged in, showing children');
+    console.log('Auth: User is logged in, showing children content');
     return <>{children}</>;
   }
   

@@ -1,8 +1,8 @@
+
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-// import { useNavigate } from 'react-router-dom'; // No longer needed here
 
 type Profile = {
   full_name: string | null;
@@ -33,9 +33,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [profile, setProfile] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  // const navigate = useNavigate(); // Removed to centralize navigation logic in components
+
+  console.log('=== AUTH PROVIDER DEBUG ===');
+  console.log('AuthProvider - session exists:', !!session);
+  console.log('AuthProvider - user exists:', !!user);
+  console.log('AuthProvider - loading:', loading);
 
   const getProfileData = React.useCallback(async (currentUser: User) => {
+    console.log('AuthProvider - fetching profile for user:', currentUser.id);
     try {
       const { data, error, status } = await supabase
         .from('profiles')
@@ -47,13 +52,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw error;
       }
       if (data) {
+        console.log('AuthProvider - profile data fetched:', data);
         setProfile(data);
         setAvatarUrl(getAvatarPublicUrl(data.avatar_url));
       } else {
+        console.log('AuthProvider - no profile data found');
         setProfile(null);
         setAvatarUrl(null);
       }
     } catch (error) {
+      console.error('AuthProvider - error fetching profile:', error);
       if (error instanceof Error) {
         toast.error(`Error fetching profile: ${error.message}`);
       }
@@ -61,18 +69,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   useEffect(() => {
+    console.log('AuthProvider - setting up auth listener');
     setLoading(true);
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      console.log('AuthProvider - auth state changed:', _event, !!newSession);
       setSession(newSession);
       const newUser = newSession?.user ?? null;
       setUser(newUser);
       
       if (newUser) {
+        console.log('AuthProvider - user logged in, fetching profile');
         getProfileData(newUser);
 
         // Handle Google Calendar Token storage
         if (_event === "SIGNED_IN" && newSession?.provider_token) {
+           console.log('AuthProvider - saving Google Calendar integration');
            setTimeout(async () => {
                 const integrationData = {
                   user_id: newUser.id,
@@ -90,18 +102,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     console.error("Error saving Google Calendar integration:", error);
                     toast.error(`Failed to link Google Calendar: ${error.message}`);
                 } else {
+                    console.log("Google Calendar integration saved successfully");
                     toast.success("Google Calendar linked successfully!");
                 }
             }, 0);
         }
       } else {
+        console.log('AuthProvider - user logged out, clearing profile');
         setProfile(null);
         setAvatarUrl(null);
       }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Check for existing session immediately
+    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      console.log('AuthProvider - existing session check:', !!existingSession);
+      if (existingSession) {
+        setSession(existingSession);
+        setUser(existingSession.user);
+        getProfileData(existingSession.user);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      console.log('AuthProvider - cleaning up auth listener');
+      subscription.unsubscribe();
+    };
   }, [getProfileData]);
   
   const updateProfileAvatarInContext = (avatarPath: string) => {

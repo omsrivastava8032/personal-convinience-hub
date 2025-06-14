@@ -8,6 +8,7 @@ import Scratchpad from '@/components/Scratchpad';
 import CountdownTimer from '@/components/CountdownTimer';
 import GoogleCalendar from '@/components/GoogleCalendar';
 import Auth from '@/components/Auth';
+import { useAuth } from '@/providers/AuthProvider';
 
 const quickLinks = [
   { title: "Calendar", href: "/calendar", icon: Calendar, description: "View your Google Calendar events." },
@@ -22,6 +23,13 @@ const SectionTitle: React.FC<{children: React.ReactNode}> = ({ children }) => (
 );
 
 const HomePage: React.FC = () => {
+  const { session, loading } = useAuth();
+  
+  console.log('=== HOMEPAGE DEBUG ===');
+  console.log('HomePage - session exists:', !!session);
+  console.log('HomePage - loading:', loading);
+  console.log('HomePage - will show calendar section:', !!session);
+
   return (
     <div className="space-y-16">
       <WelcomeBanner />
@@ -39,9 +47,19 @@ const HomePage: React.FC = () => {
 
       <section>
         <SectionTitle>My Calendar</SectionTitle>
-        <Auth>
-          <GoogleCalendar />
-        </Auth>
+        {session ? (
+          <div>
+            <p className="text-sm text-muted-foreground mb-4">You are logged in. Calendar should appear below:</p>
+            <GoogleCalendar />
+          </div>
+        ) : (
+          <div>
+            <p className="text-sm text-muted-foreground mb-4">Please log in to view your calendar:</p>
+            <Auth>
+              <GoogleCalendar />
+            </Auth>
+          </div>
+        )}
       </section>
 
       <TodaysSnapshot />
