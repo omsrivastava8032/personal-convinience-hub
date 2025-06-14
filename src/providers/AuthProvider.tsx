@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(newUser);
       
       if (newUser) {
-        console.log('AuthProvider - user logged in, fetching profile');
+        console.log('AuthProvider - user detected, fetching profile');
         getProfileData(newUser);
 
         // Handle Google Calendar Token storage
@@ -116,17 +116,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('AuthProvider - user logged out, clearing profile');
         setProfile(null);
         setAvatarUrl(null);
-      }
-      setLoading(false);
-    });
-
-    // Check for existing session immediately
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      console.log('AuthProvider - existing session check:', !!existingSession);
-      if (existingSession) {
-        setSession(existingSession);
-        setUser(existingSession.user);
-        getProfileData(existingSession.user);
       }
       setLoading(false);
     });
