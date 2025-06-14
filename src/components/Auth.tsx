@@ -1,3 +1,4 @@
+
 import { useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
 
   useEffect(() => {
     if (session && !children) {
-      navigate('/learning');
+      navigate('/calendar');
     }
   }, [session, children, navigate]);
 
@@ -61,7 +62,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/learning`,
+        redirectTo: `${window.location.origin}/calendar`,
         scopes: 'https://www.googleapis.com/auth/calendar.readonly',
       },
     });
