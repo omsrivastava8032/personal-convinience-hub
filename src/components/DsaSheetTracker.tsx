@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from '@/components/ui/input';
 
 type Topic = {
     id: string;
@@ -49,6 +51,7 @@ const fetchUserProgress = async (userId: string): Promise<UserProgress[]> => {
 
 const DsaSheetTracker: React.FC = () => {
     const [session, setSession] = useState<Session | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -119,16 +122,22 @@ const DsaSheetTracker: React.FC = () => {
 
     const progressMap = new Map(userProgress?.map(p => [p.topic_id, p.is_completed]));
     
-    const topicsWithCompletion: TopicWithCompletion[] = topics?.map(topic => ({
+    const allTopicsWithCompletion: TopicWithCompletion[] = topics?.map(topic => ({
         ...topic,
         is_completed: progressMap.get(topic.id) || false,
     })) || [];
 
-    const completedCount = topicsWithCompletion.filter(t => t.is_completed).length;
-    const totalCount = topicsWithCompletion.length;
+    const completedCount = allTopicsWithCompletion.filter(t => t.is_completed).length;
+    const totalCount = allTopicsWithCompletion.length;
     const overallProgress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+    const filteredTopics = searchTerm
+        ? allTopicsWithCompletion.filter(topic =>
+            topic.topic_name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : allTopicsWithCompletion;
     
-    const groupedTopics = topicsWithCompletion.reduce((acc, topic) => {
+    const groupedTopics = filteredTopics.reduce((acc, topic) => {
         (acc[topic.category] = acc[topic.category] || []).push(topic);
         return acc;
     }, {} as Record<string, TopicWithCompletion[]>);
@@ -154,55 +163,72 @@ const DsaSheetTracker: React.FC = () => {
                 </CardContent>
             </Card>
 
-            <Accordion type="multiple" className="w-full space-y-4">
-                {Object.entries(groupedTopics).map(([category, topicsInCategory]) => {
-                    const categoryCompletedCount = topicsInCategory.filter(t => t.is_completed).length;
-                    const categoryTotalCount = topicsInCategory.length;
-                    const categoryProgress = categoryTotalCount > 0 ? (categoryCompletedCount / categoryTotalCount) * 100 : 0;
+            <div className="space-y-4">
+                <Input
+                    type="text"
+                    placeholder="Search for a problem..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full"
+                />
+                <Accordion type="multiple" className="w-full space-y-4">
+                    {Object.entries(groupedTopics).map(([category, topicsInCategory]) => {
+                        const allTopicsInCategory = allTopicsWithCompletion.filter(t => t.category === category);
+                        const categoryCompletedCount = allTopicsInCategory.filter(t => t.is_completed).length;
+                        const categoryTotalCount = allTopicsInCategory.length;
+                        const categoryProgress = categoryTotalCount > 0 ? (categoryCompletedCount / categoryTotalCount) * 100 : 0;
 
-                    return (
-                        <AccordionItem value={category} key={category} className="border-none">
-                             <Card>
-                                <AccordionTrigger className="p-6 hover:no-underline text-left">
-                                    <div className="w-full">
-                                        <div className="flex justify-between items-center">
-                                            <h3 className="text-lg font-semibold">{category}</h3>
-                                            <span className="text-sm font-medium text-muted-foreground">
-                                                {categoryCompletedCount} / {categoryTotalCount}
-                                            </span>
-                                        </div>
-                                        <Progress value={categoryProgress} className="mt-2" />
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-6 pb-6">
-                                    <div className="space-y-2 pt-4 border-t">
-                                        {topicsInCategory.map(topic => (
-                                            <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
-                                                <div className="flex items-center gap-4">
-                                                     <Checkbox
-                                                        id={topic.id}
-                                                        checked={topic.is_completed}
-                                                        onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
-                                                        disabled={updateProgressMutation.isPending}
-                                                    />
-                                                    <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
-                                                </div>
-                                                {topic.problem_url && (
-                                                    <Button variant="ghost" size="icon" asChild>
-                                                        <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
-                                                            <ExternalLink className="h-4 w-4" />
-                                                        </a>
-                                                    </Button>
-                                                )}
+                        return (
+                            <AccordionItem value={category} key={category} className="border-none">
+                                 <Card>
+                                    <AccordionTrigger className="p-6 hover:no-underline text-left">
+                                        <div className="w-full">
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="text-lg font-semibold">{category}</h3>
+                                                <span className="text-sm font-medium text-muted-foreground">
+                                                    {categoryCompletedCount} / {categoryTotalCount}
+                                                </span>
                                             </div>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </Card>
-                        </AccordionItem>
-                    );
-                })}
-            </Accordion>
+                                            <Progress value={categoryProgress} className="mt-2" />
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-6 pb-6">
+                                        <div className="space-y-2 pt-4 border-t">
+                                            {topicsInCategory.map(topic => (
+                                                <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
+                                                    <div className="flex items-center gap-4">
+                                                         <Checkbox
+                                                            id={topic.id}
+                                                            checked={topic.is_completed}
+                                                            onCheckedChange={(checked) => handleCheckboxChange(topic.id, Boolean(checked))}
+                                                            disabled={updateProgressMutation.isPending}
+                                                        />
+                                                        <Label htmlFor={topic.id} className="text-base font-normal cursor-pointer">{topic.topic_name}</Label>
+                                                    </div>
+                                                    {topic.problem_url && (
+                                                        <Button variant="ghost" size="icon" asChild>
+                                                            <a href={topic.problem_url} target="_blank" rel="noopener noreferrer" aria-label={`Open problem for ${topic.topic_name}`}>
+                                                                <ExternalLink className="h-4 w-4" />
+                                                            </a>
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </Card>
+                            </AccordionItem>
+                        );
+                    })}
+                </Accordion>
+                {Object.keys(groupedTopics).length === 0 && searchTerm && (
+                    <Card>
+                        <CardContent className="p-6 text-center text-muted-foreground">
+                            No problems found for "{searchTerm}".
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </div>
     );
 };
