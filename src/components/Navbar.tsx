@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import type { Session } from '@supabase/supabase-js';
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from '@/providers/AuthProvider';
 
 const navItems = [
   { name: 'Home', path: '/', icon: Home },
@@ -16,20 +15,8 @@ const navItems = [
 ];
 
 const Navbar: React.FC = () => {
-  const [session, setSession] = useState<Session | null>(null);
+  const { session } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

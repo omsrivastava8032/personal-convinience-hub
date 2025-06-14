@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
@@ -21,21 +22,23 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/projects" element={<ProjectsPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/learning" element={<LearningPage />} />
-              <Route path="/resume" element={<ResumePage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/learning" element={<LearningPage />} />
+                <Route path="/resume" element={<ResumePage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

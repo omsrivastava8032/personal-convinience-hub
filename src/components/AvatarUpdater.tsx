@@ -1,74 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserCircle, Camera, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Session } from '@supabase/supabase-js';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function AvatarUpdater() {
-  const [session, setSession] = useState<Session | null>(null);
+  const { session, avatarUrl, updateProfileAvatarInContext } = useAuth();
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        getProfile(session);
-      }
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-       if (session) {
-        getProfile(session);
-      } else {
-        setAvatarUrl(null);
-      }
-    });
-
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-  }, []);
-
-  function getAvatarPublicUrl(path: string) {
-    if (!path) return null;
-    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-    return data.publicUrl;
-  }
-
-  async function getProfile(currentSession: Session) {
-    if (!currentSession?.user) throw new Error('No user on the session!')
-
-    try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`avatar_url`)
-        .eq('id', currentSession.user.id)
-        .single();
-
-      if (error && status !== 406) {
-        // It's okay if no profile is found, just means no avatar is set.
-        if (status !== 406) throw error;
-      }
-
-      if (data?.avatar_url) {
-        setAvatarUrl(getAvatarPublicUrl(data.avatar_url));
-      } else {
-        setAvatarUrl(null);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error('Error loading user avatar: ' + error.message);
-      }
-    }
-  }
 
   async function uploadAvatar(event: React.ChangeEvent<HTMLInputElement>) {
     if (!session?.user) throw new Error('No user on the session!')
@@ -111,7 +53,7 @@ export default function AvatarUpdater() {
         throw updateError;
       }
       
-      setAvatarUrl(getAvatarPublicUrl(filePath));
+      updateProfileAvatarInContext(filePath);
       toast.success('Profile picture updated!');
 
     } catch (error) {

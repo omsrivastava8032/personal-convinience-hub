@@ -1,61 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Session } from '@supabase/supabase-js';
+import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle } from 'lucide-react';
-import { toast } from 'sonner';
 import AvatarUpdater from './AvatarUpdater';
+import { useAuth } from '@/providers/AuthProvider';
 
 const WelcomeBanner: React.FC = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<{ full_name: string | null; bio: string | null } | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
-
-    return () => {
-      if (authListener?.subscription) {
-        authListener.subscription.unsubscribe();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (session) {
-      getProfile();
-    } else {
-      setProfile(null);
-    }
-  }, [session]);
-
-  async function getProfile() {
-    if (!session?.user) return;
-    try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`full_name, bio`)
-        .eq('id', session.user.id)
-        .single();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-      setProfile(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Error fetching profile: ${error.message}`);
-      }
-    }
-  }
+  const { session, profile } = useAuth();
 
   const defaultName = "OM Srivastava";
   const defaultBio = "Passionate developer building things for the web. This hub is my personal corner of the internet to stay organized and track my progress.";
