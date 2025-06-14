@@ -25,6 +25,9 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
   
+  // Filter nav items based on auth state before mapping
+  const visibleNavItems = navItemsConfig.filter(item => !item.private || !!session);
+
   return (
     <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -34,19 +37,14 @@ const Navbar: React.FC = () => {
             <span className="font-semibold text-xl">Personal Convenience Hub</span>
           </Link>
           <div className="flex items-center space-x-1">
-            {navItemsConfig.map((item) => {
-              if (item.private && !session) {
-                return null;
-              }
-              return (
-                <Button key={item.name} variant="ghost" asChild>
-                  <Link to={item.path} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
-                    <item.icon size={18} className="hidden sm:inline-block" />
-                    <span>{item.name}</span>
-                  </Link>
-                </Button>
-              );
-            })}
+            {visibleNavItems.map((item) => (
+              <Button key={item.name} variant="ghost" asChild>
+                <Link to={item.path} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                  <item.icon size={18} className="hidden sm:inline-block" />
+                  <span>{item.name}</span>
+                </Link>
+              </Button>
+            ))}
             {session ? (
               <Button variant="ghost" onClick={handleLogout} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
                 <LogOut size={18} className="hidden sm:inline-block" />
