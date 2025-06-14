@@ -33,7 +33,6 @@ const HomePage: React.FC = () => {
   return (
     <div className="space-y-16">
       <WelcomeBanner />
-      
       <CountdownTimer />
 
       <section>
@@ -45,8 +44,23 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section>
-        <SectionTitle>My Calendar</SectionTitle>
+      <section className="bg-yellow-100 dark:bg-yellow-900 rounded-lg p-6">
+        <SectionTitle>My Calendar (debug mode)</SectionTitle>
+        <div className="mb-4">
+          <div className="font-mono text-xs">
+            <span className="font-bold">session:</span>
+            <pre className="overflow-x-auto bg-yellow-200 dark:bg-yellow-800 p-2 rounded">
+              {JSON.stringify(session, null, 2)}
+            </pre>
+          </div>
+          <div className="font-mono text-xs">
+            <span className="font-bold">loading:</span>
+            <pre className="overflow-x-auto bg-yellow-200 dark:bg-yellow-800 p-2 rounded">
+              {JSON.stringify(loading, null, 2)}
+            </pre>
+          </div>
+        </div>
+        {/* Original conditional rendering untouched */}
         {session ? (
           <div>
             <p className="text-sm text-muted-foreground mb-4">You are logged in. Calendar should appear below:</p>
@@ -63,10 +77,10 @@ const HomePage: React.FC = () => {
       </section>
 
       <TodaysSnapshot />
-      
       <Scratchpad />
     </div>
   );
 };
 
 export default HomePage;
+
