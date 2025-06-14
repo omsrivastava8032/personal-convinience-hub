@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText, LogIn, LogOut } from 'lucide-react';
+import { Code2, Home, Briefcase, BookOpen, MessageSquare, FileText, LogIn, LogOut, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -11,6 +12,7 @@ const navItems = [
   { name: 'Projects', path: '/projects', icon: Briefcase },
   { name: 'Blog', path: '/blog', icon: BookOpen },
   { name: 'Learning', path: '/learning', icon: FileText },
+  { name: 'Calendar', path: '/calendar', icon: Calendar },
   { name: 'Resume & Contact', path: '/resume', icon: MessageSquare },
 ];
 
