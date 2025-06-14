@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -42,13 +41,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const getProfileData = React.useCallback(async (currentUser: User) => {
     console.log('AuthProvider - fetching profile for user:', currentUser.id);
     try {
-      const { data, error, status } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select(`full_name, bio, avatar_url`)
         .eq('id', currentUser.id)
-        .single();
+        .maybeSingle();
 
-      if (error && status !== 406) {
+      if (error) {
         throw error;
       }
       if (data) {
