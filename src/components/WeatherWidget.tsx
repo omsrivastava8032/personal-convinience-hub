@@ -1,17 +1,23 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, AlertCircle, Sun, Cloud, CloudSun, CloudRain, Snowflake } from 'lucide-react';
+import { Loader2, AlertCircle, Sun, Cloud, CloudSun, CloudRain, Snowflake, Moon } from 'lucide-react';
 
 interface WeatherData {
   current_condition: {
     temp_C: string;
     weatherDesc: { value: string }[];
+    localObsDateTime: string;
   }[];
   nearest_area: {
     areaName: { value: string }[];
     country: { value:string }[];
+  }[];
+  weather: {
+    astronomy: {
+      sunrise: string;
+      sunset: string;
+    }[];
   }[];
 }
 
@@ -21,20 +27,27 @@ const fetchWeather = async (latitude: number, longitude: number): Promise<Weathe
     throw new Error('Failed to fetch weather data.');
   }
   const data = await response.json();
-  if (!data.current_condition || !data.nearest_area) {
+  if (!data.current_condition || !data.nearest_area || !data.weather) {
     throw new Error('Invalid weather data format received.');
   }
   return data;
 };
 
-const WeatherIcon = ({ description }: { description: string }) => {
+const WeatherIcon = ({ description, isNight }: { description: string; isNight: boolean }) => {
   const desc = description.toLowerCase();
-  if (desc.includes('sunny') || desc.includes('clear')) return <Sun className="h-10 w-10 text-yellow-500" />;
+
+  if (desc.includes('partly cloudy')) {
+    return isNight ? <Cloud className="h-10 w-10 text-gray-400" /> : <CloudSun className="h-10 w-10 text-yellow-400" />;
+  }
+  if (desc.includes('sunny') || desc.includes('clear')) {
+    return isNight ? <Moon className="h-10 w-10 text-gray-300" /> : <Sun className="h-10 w-10 text-yellow-500" />;
+  }
   if (desc.includes('rain') || desc.includes('shower')) return <CloudRain className="h-10 w-10 text-blue-500" />;
   if (desc.includes('snow')) return <Snowflake className="h-10 w-10 text-blue-300" />;
   if (desc.includes('cloudy') || desc.includes('overcast')) return <Cloud className="h-10 w-10 text-gray-500" />;
-  if (desc.includes('partly cloudy')) return <CloudSun className="h-10 w-10 text-yellow-400" />;
-  return <CloudSun className="h-10 w-10 text-yellow-400" />;
+
+  // Fallback
+  return isNight ? <Moon className="h-10 w-10 text-gray-300" /> : <CloudSun className="h-10 w-10 text-yellow-400" />;
 };
 
 const WeatherWidget: React.FC = () => {
@@ -63,6 +76,34 @@ const WeatherWidget: React.FC = () => {
     retry: 1,
   });
 
+  const isNight = (() => {
+    if (!weather?.weather?.[0]?.astronomy?.[0] || !weather?.current_condition?.[0]?.localObsDateTime) {
+      return false;
+    }
+
+    try {
+      const { sunrise, sunset } = weather.weather[0].astronomy[0];
+      const { localObsDateTime } = weather.current_condition[0];
+      
+      const timeMatch = localObsDateTime.match(/(\d{1,2}):\d{2}\s(AM|PM)/);
+      if (!timeMatch) return false;
+
+      let hour = parseInt(timeMatch[1], 10);
+      const ampm = timeMatch[2];
+
+      if (ampm === 'PM' && hour !== 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+
+      const sunriseHour = parseInt(sunrise.split(':')[0], 10);
+      const sunsetHour = parseInt(sunset.split(':')[0], 10) + 12;
+
+      return hour < sunriseHour || hour >= sunsetHour;
+    } catch (e) {
+      console.error("Failed to determine day/night cycle", e);
+      return false;
+    }
+  })();
+
   const area = weather?.nearest_area[0];
   const locationName = area ? `${area.areaName[0].value}, ${area.country[0].value}` : (locationError || '... a default location');
   
@@ -90,7 +131,7 @@ const WeatherWidget: React.FC = () => {
               <p className="text-4xl font-bold">{weather.current_condition[0].temp_C}°C</p>
               <p className="text-muted-foreground">{weather.current_condition[0].weatherDesc[0].value}</p>
             </div>
-            <WeatherIcon description={weather.current_condition[0].weatherDesc[0].value} />
+            <WeatherIcon description={weather.current_condition[0].weatherDesc[0].value} isNight={isNight} />
           </div>
         ) : null}
       </CardContent>
