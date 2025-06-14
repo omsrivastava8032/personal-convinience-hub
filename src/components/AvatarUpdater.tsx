@@ -37,6 +37,12 @@ export default function AvatarUpdater() {
     };
   }, []);
 
+  function getAvatarPublicUrl(path: string) {
+    if (!path) return null;
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   async function getProfile(currentSession: Session) {
     if (!currentSession?.user) throw new Error('No user on the session!')
 
@@ -53,7 +59,7 @@ export default function AvatarUpdater() {
       }
 
       if (data?.avatar_url) {
-        downloadImage(data.avatar_url);
+        setAvatarUrl(getAvatarPublicUrl(data.avatar_url));
       } else {
         setAvatarUrl(null);
       }
@@ -61,23 +67,6 @@ export default function AvatarUpdater() {
       if (error instanceof Error) {
         toast.error('Error loading user avatar: ' + error.message);
       }
-    }
-  }
-
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabase.storage.from('avatars').download(path);
-      if (error) {
-        throw error;
-      }
-      // free up memory from previous object URLs
-      if (avatarUrl) {
-          URL.revokeObjectURL(avatarUrl);
-      }
-      const url = URL.createObjectURL(data);
-      setAvatarUrl(url);
-    } catch (error) {
-      console.log('Error downloading image: ', error);
     }
   }
 
@@ -122,7 +111,7 @@ export default function AvatarUpdater() {
         throw updateError;
       }
       
-      await getProfile(session);
+      setAvatarUrl(getAvatarPublicUrl(filePath));
       toast.success('Profile picture updated!');
 
     } catch (error) {
