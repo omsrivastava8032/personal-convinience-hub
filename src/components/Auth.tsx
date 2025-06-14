@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
+import { Loader2 } from 'lucide-react';
 
 export default function Auth({ children }: { children?: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -72,9 +73,27 @@ export default function Auth({ children }: { children?: ReactNode }) {
     }
     setLoading(false);
   };
-  
-  if (loading) {
-    return null;
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      toast.error(error.message);
+    }
+    // No need to setLoading(false) here, as the page will redirect.
+  };
+
+  if (loading && !session) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="animate-spin h-8 w-8 text-primary" />
+      </div>
+    );
   }
 
   if (session && children) {
@@ -105,6 +124,20 @@ export default function Auth({ children }: { children?: ReactNode }) {
             </Button>
             <Button className="w-full" variant="secondary" type="button" onClick={handleSignup} disabled={loading || !email || !password}>
               {loading ? 'Signing Up...' : 'Sign Up'}
+            </Button>
+            <div className="relative w-full my-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            <Button className="w-full" variant="outline" type="button" onClick={handleGoogleLogin} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Sign in with Google
             </Button>
           </CardFooter>
         </form>
