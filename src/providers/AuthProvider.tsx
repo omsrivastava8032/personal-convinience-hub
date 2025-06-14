@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom'; // No longer needed here
 
 type Profile = {
   full_name: string | null;
@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [profile, setProfile] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // Removed to centralize navigation logic in components
 
   const getProfileData = React.useCallback(async (currentUser: User) => {
     try {
@@ -62,25 +62,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     setLoading(true);
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      const currentUser = currentSession?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        getProfileData(currentUser);
-      }
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       const newUser = newSession?.user ?? null;
       setUser(newUser);
       
-      if (event === 'SIGNED_IN' && newUser) {
-        navigate('/learning');
-      }
-
       if (newUser) {
         getProfileData(newUser);
       } else {
@@ -91,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     return () => subscription.unsubscribe();
-  }, [getProfileData, navigate]);
+  }, [getProfileData]);
   
   const updateProfileAvatarInContext = (avatarPath: string) => {
       setAvatarUrl(getAvatarPublicUrl(avatarPath));
