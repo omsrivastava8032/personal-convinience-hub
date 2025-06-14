@@ -1,4 +1,3 @@
-
 import { useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -74,7 +73,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
 
   const isFormSubmitting = loading || authLoading;
 
-  if (authLoading && !session) {
+  if (authLoading) {
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
