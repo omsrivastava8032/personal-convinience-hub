@@ -25,8 +25,10 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
   
-  // Filter nav items based on auth state before mapping
-  const visibleNavItems = navItemsConfig.filter(item => !item.private || !!session);
+  // A more robust check for a valid, active session.
+  const isLoggedIn = !!(session?.user && session?.access_token);
+  
+  const visibleNavItems = navItemsConfig.filter(item => !item.private || isLoggedIn);
 
   return (
     <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
@@ -45,7 +47,7 @@ const Navbar: React.FC = () => {
                 </Link>
               </Button>
             ))}
-            {session ? (
+            {isLoggedIn ? (
               <Button variant="ghost" onClick={handleLogout} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
                 <LogOut size={18} className="hidden sm:inline-block" />
                 <span>Logout</span>
