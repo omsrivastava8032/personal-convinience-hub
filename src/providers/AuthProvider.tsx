@@ -70,6 +70,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (newUser) {
         getProfileData(newUser);
+
+        // Handle Google Calendar Token storage
+        if (_event === "SIGNED_IN" && newSession?.provider_token) {
+           setTimeout(async () => {
+                const integrationData = {
+                  user_id: newUser.id,
+                  access_token: newSession.provider_token,
+                  refresh_token: newSession.provider_refresh_token,
+                  expires_at: newSession.expires_at ? new Date(newSession.expires_at * 1000).toISOString() : new Date(Date.now() + 3600 * 1000).toISOString(),
+                  scope: 'https://www.googleapis.com/auth/calendar.readonly'
+                };
+
+                const { error } = await supabase
+                    .from('google_calendar_integrations')
+                    .upsert(integrationData, { onConflict: 'user_id' });
+
+                if (error) {
+                    console.error("Error saving Google Calendar integration:", error);
+                    toast.error(`Failed to link Google Calendar: ${error.message}`);
+                } else {
+                    toast.success("Google Calendar linked successfully!");
+                }
+            }, 0);
+        }
       } else {
         setProfile(null);
         setAvatarUrl(null);
