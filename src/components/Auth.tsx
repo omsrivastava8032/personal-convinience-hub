@@ -1,3 +1,4 @@
+
 import { useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,36 +7,21 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Session } from '@supabase/supabase-js';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function Auth({ children }: { children?: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { session, loading: authLoading } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Your app\'s origin is:', window.location.origin);
-    console.log('Please ensure your Supabase redirect URL is set to:', `${window.location.origin}/learning`);
-    
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setLoading(false);
-    };
-    getSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session && !children) {
-        navigate('/learning');
-      }
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [children, navigate]);
+    if (session && !children) {
+      navigate('/learning');
+    }
+  }, [session, children, navigate]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -48,9 +34,6 @@ export default function Auth({ children }: { children?: ReactNode }) {
       setLoading(false);
     } else {
       toast.success("Logged in successfully!");
-      if (!children) {
-        navigate('/learning');
-      }
     }
   };
 
@@ -89,7 +72,9 @@ export default function Auth({ children }: { children?: ReactNode }) {
     // No need to setLoading(false) on success, as the page will redirect.
   };
 
-  if (loading && !session) {
+  const isFormSubmitting = loading || authLoading;
+
+  if (authLoading && !session) {
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -120,11 +105,11 @@ export default function Auth({ children }: { children?: ReactNode }) {
             </div>
           </CardContent>
           <CardFooter className="flex-col space-y-2">
-            <Button className="w-full" type="submit" disabled={loading || !email || !password}>
-              {loading ? 'Signing In...' : 'Sign In'}
+            <Button className="w-full" type="submit" disabled={isFormSubmitting || !email || !password}>
+              {isFormSubmitting ? 'Signing In...' : 'Sign In'}
             </Button>
-            <Button className="w-full" variant="secondary" type="button" onClick={handleSignup} disabled={loading || !email || !password}>
-              {loading ? 'Signing Up...' : 'Sign Up'}
+            <Button className="w-full" variant="secondary" type="button" onClick={handleSignup} disabled={isFormSubmitting || !email || !password}>
+              {isFormSubmitting ? 'Signing Up...' : 'Sign Up'}
             </Button>
             <div className="relative w-full my-2">
               <div className="absolute inset-0 flex items-center">
@@ -136,8 +121,8 @@ export default function Auth({ children }: { children?: ReactNode }) {
                 </span>
               </div>
             </div>
-            <Button className="w-full" variant="outline" type="button" onClick={handleGoogleLogin} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            <Button className="w-full" variant="outline" type="button" onClick={handleGoogleLogin} disabled={isFormSubmitting}>
+              {isFormSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Sign in with Google
             </Button>
           </CardFooter>
