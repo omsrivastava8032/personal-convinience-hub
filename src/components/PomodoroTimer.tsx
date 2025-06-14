@@ -72,23 +72,23 @@ const PomodoroTimer: React.FC = () => {
         <Timer className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent className="flex flex-col items-center space-y-4 pt-4">
-        <div className="flex space-x-2">
-          <Button variant={mode === 'pomodoro' ? 'default' : 'outline'} size="sm" onClick={() => switchMode('pomodoro')}>Work</Button>
-          <Button variant={mode === 'shortBreak' ? 'default' : 'outline'} size="sm" onClick={() => switchMode('shortBreak')}>Short Break</Button>
-          <Button variant={mode === 'longBreak' ? 'default' : 'outline'} size="sm" onClick={() => switchMode('longBreak')}>Long Break</Button>
+        <div className="flex space-x-2 bg-secondary p-1 rounded-lg">
+          <Button variant={mode === 'pomodoro' ? 'default' : 'ghost'} size="sm" onClick={() => switchMode('pomodoro')} className="flex-1 justify-center">Work</Button>
+          <Button variant={mode === 'shortBreak' ? 'default' : 'ghost'} size="sm" onClick={() => switchMode('shortBreak')} className="flex-1 justify-center">Short Break</Button>
+          <Button variant={mode === 'longBreak' ? 'default' : 'ghost'} size="sm" onClick={() => switchMode('longBreak')} className="flex-1 justify-center">Long Break</Button>
         </div>
-        <div className="text-6xl font-bold text-primary tabular-nums">
+        <div className="text-7xl font-bold text-primary tabular-nums my-4">
           {formatTime(time)}
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="icon" onClick={toggleTimer} aria-label={isActive ? 'Pause timer' : 'Start timer'}>
-            {isActive ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          <Button variant="outline" size="icon" onClick={toggleTimer} aria-label={isActive ? 'Pause timer' : 'Start timer'} className="w-16 h-16 rounded-full">
+            {isActive ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
           </Button>
-          <Button variant="outline" size="icon" onClick={resetTimer} aria-label="Reset timer">
-            <RotateCcw className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={resetTimer} aria-label="Reset timer" className="w-16 h-16 rounded-full">
+            <RotateCcw className="h-7 w-7" />
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground">{
+        <p className="text-sm text-muted-foreground h-5 mt-2">{
             mode === 'pomodoro' ? 'Time to focus!' : 'Time for a break!'
         }</p>
       </CardContent>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { AlarmClock } from 'lucide-react';
@@ -48,20 +47,20 @@ const CountdownTimer: React.FC = () => {
         {timeLeft ? (
           <div className="grid grid-cols-4 gap-2 text-center tabular-nums">
             <div>
-              <div className="text-2xl font-bold">{timeLeft.days}</div>
-              <div className="text-xs text-muted-foreground">Days</div>
+              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{timeLeft.days}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest">Days</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{formatUnit(timeLeft.hours)}</div>
-              <div className="text-xs text-muted-foreground">Hours</div>
+              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.hours)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest">Hours</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{formatUnit(timeLeft.minutes)}</div>
-              <div className="text-xs text-muted-foreground">Minutes</div>
+              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.minutes)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest">Minutes</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{formatUnit(timeLeft.seconds)}</div>
-              <div className="text-xs text-muted-foreground">Seconds</div>
+              <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">{formatUnit(timeLeft.seconds)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-widest">Seconds</div>
             </div>
           </div>
         ) : (

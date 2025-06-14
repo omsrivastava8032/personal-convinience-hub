@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle } from 'lucide-react';
@@ -11,16 +10,16 @@ interface WelcomeBannerProps {
 
 const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ name, bio, avatarSrc }) => {
   return (
-    <section className="bg-card p-8 rounded-lg shadow-md flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8">
-      <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-primary">
+    <section className="bg-card p-8 rounded-xl shadow-lg flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 border">
+      <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-primary/20">
         <AvatarImage src={avatarSrc} alt={name} />
         <AvatarFallback>
           <UserCircle className="w-full h-full text-muted-foreground" />
         </AvatarFallback>
       </Avatar>
       <div>
-        <h1 className="text-4xl sm:text-5xl font-bold text-primary">Welcome, I'm {name}!</h1>
-        <p className="mt-2 text-lg text-muted-foreground">{bio}</p>
+        <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400">Welcome, I'm {name}!</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl">{bio}</p>
       </div>
     </section>
   );
