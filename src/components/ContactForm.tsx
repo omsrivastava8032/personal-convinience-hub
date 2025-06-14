@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast"; // Ensure this path is correct for shadcn toast hook
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -28,15 +28,43 @@ const ContactForm: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
-    // Here you would typically send the data to a backend or email service
-    toast({
-      title: "Message Sent (Simulated)",
-      description: "Thank you for your message! I'll get back to you soon. (This is a simulation, no email was actually sent.)",
-      variant: "default", 
-    });
-    form.reset();
+  const onSubmit = async (data: FormData) => {
+    form.formState.isSubmitting = true; // Manually set submitting state
+    console.log("Form submission started:", data);
+
+    try {
+      const { data: functionResponse, error: functionError } = await supabase.functions.invoke('send-contact-email', {
+        body: data,
+      });
+
+      if (functionError) {
+        console.error("Supabase function error:", functionError);
+        toast({
+          title: "Error Sending Message",
+          description: `Failed to send message: ${functionError.message}. Please try again.`,
+          variant: "destructive",
+        });
+      } else {
+        console.log("Supabase function response:", functionResponse);
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for your message! I'll get back to you soon.",
+          variant: "default",
+        });
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Error invoking Supabase function:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      form.formState.isSubmitting = false; // Manually reset submitting state
+      // Trigger re-render if needed, though react-hook-form should handle this with form.formState.isSubmitting
+      form.trigger(); // Optionally trigger validation to refresh form state display
+    }
   };
 
   return (

@@ -1,1 +1,6 @@
+
 project_id = "qoktxkflnllfvonneiws"
+
+[functions.send-contact-email]
+# No specific config needed for this function yet,
+# verify_jwt = true is the default (secure)
