@@ -10,7 +10,6 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import ProjectsPage from "./pages/ProjectsPage";
-import BlogPage from "./pages/BlogPage";
 import LearningPage from "./pages/LearningPage";
 import ResumePage from "./pages/ResumePage";
 import AuthPage from "./pages/AuthPage";
@@ -21,7 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <TooltipProvider>
         <BrowserRouter>
           <AuthProvider>
@@ -31,7 +30,6 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
-                <Route path="/blog" element={<BlogPage />} />
                 <Route path="/learning" element={<LearningPage />} />
                 <Route path="/resume" element={<ResumePage />} />
                 <Route path="/auth" element={<AuthPage />} />
