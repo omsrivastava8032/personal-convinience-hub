@@ -26,40 +26,63 @@ const HomePage: React.FC = () => {
         <CountdownTimer />
       </div>
 
-      {/* Quick Links - Rectangular Grid Layout */}
+      {/* Quick Links - Fan-out on Hover */}
       <section className="space-y-6">
         <h2 className="text-3xl font-bold tracking-tight mb-8 text-center">Quick Access</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+        <div className="relative h-96 flex items-center justify-center group">
           {quickLinks.map((link, index) => {
             const Icon = link.icon;
             const isExternal = link.href.startsWith('http');
             
+            // Calculate fan-out positions
+            const baseTransform = `translateX(-50%) translateY(-50%) rotate(${(index - 1.5) * 2}deg)`;
+            const hoverTransform = `translateX(${(index - 1.5) * 200}px) translateY(${Math.abs(index - 1.5) * -30}px) rotate(${(index - 1.5) * 5}deg) scale(1.05)`;
+            
             const content = (
-              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm border border-primary/20 p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:scale-[1.02]">
-                <div className="flex items-center justify-between mb-4">
-                  <Icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-300" />
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                    <span className="text-primary font-bold text-lg">{index + 1}</span>
+              <div 
+                className="absolute top-1/2 left-1/2 w-72 h-40 transition-all duration-500 ease-out cursor-pointer z-10"
+                style={{
+                  transform: baseTransform,
+                  zIndex: 10 - index
+                }}
+              >
+                <div 
+                  className="w-full h-full rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm border border-primary/20 p-6 shadow-lg transition-all duration-500 group-hover:shadow-2xl"
+                  style={{
+                    transform: 'translateZ(0)',
+                    transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = hoverTransform;
+                    e.currentTarget.style.zIndex = '20';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateZ(0)';
+                    e.currentTarget.style.zIndex = (10 - index).toString();
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <Icon className="h-7 w-7 text-primary transition-transform duration-300 hover:scale-110" />
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center transition-colors duration-300 hover:bg-primary/20">
+                      <span className="text-primary font-bold text-sm">{index + 1}</span>
+                    </div>
                   </div>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground transition-colors duration-300 hover:text-primary">{link.title}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{link.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">{link.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{link.description}</p>
-                
-                {/* Hover Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             );
 
             if (isExternal) {
               return (
-                <a key={link.title} href={link.href} target="_blank" rel="noopener noreferrer">
+                <a key={link.title} href={link.href} target="_blank" rel="noopener noreferrer" className="contents">
                   {content}
                 </a>
               );
             }
 
             return (
-              <a key={link.title} href={link.href}>
+              <a key={link.title} href={link.href} className="contents">
                 {content}
               </a>
             );

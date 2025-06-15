@@ -12,21 +12,33 @@ const TodaysSnapshot: React.FC = () => {
     <section>
       <h2 className="text-3xl font-bold tracking-tight mb-6 text-center sm:text-left">Today's Snapshot</h2>
       <Tabs defaultValue="working-on" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-4 bg-transparent p-0 h-auto">
-          <TabsTrigger value="working-on" className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all hover:bg-card/70">
-            <Edit className="h-6 w-6 text-primary" />
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-4 bg-transparent p-0 h-auto group">
+          <TabsTrigger 
+            value="working-on" 
+            className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group-hover:translate-x-0 transform"
+          >
+            <Edit className="h-6 w-6 text-primary transition-transform duration-300 hover:scale-110" />
             <span className="font-medium">Working On</span>
           </TabsTrigger>
-          <TabsTrigger value="todo-list" className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all hover:bg-card/70">
-            <ListTodo className="h-6 w-6 text-primary" />
+          <TabsTrigger 
+            value="todo-list" 
+            className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group-hover:translate-x-0 transform"
+          >
+            <ListTodo className="h-6 w-6 text-primary transition-transform duration-300 hover:scale-110" />
             <span className="font-medium">To-do</span>
           </TabsTrigger>
-          <TabsTrigger value="pomodoro" className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all hover:bg-card/70">
-            <Timer className="h-6 w-6 text-primary" />
+          <TabsTrigger 
+            value="pomodoro" 
+            className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group-hover:translate-x-0 transform"
+          >
+            <Timer className="h-6 w-6 text-primary transition-transform duration-300 hover:scale-110" />
             <span className="font-medium">Pomodoro</span>
           </TabsTrigger>
-          <TabsTrigger value="weather" className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all hover:bg-card/70">
-            <Cloud className="h-6 w-6 text-primary" />
+          <TabsTrigger 
+            value="weather" 
+            className="flex-col gap-2 p-4 h-auto data-[state=active]:bg-card/80 data-[state=active]:shadow-lg rounded-lg bg-card/60 backdrop-blur-md border border-card-foreground/20 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group-hover:translate-x-0 transform"
+          >
+            <Cloud className="h-6 w-6 text-primary transition-transform duration-300 hover:scale-110" />
             <span className="font-medium">Weather</span>
           </TabsTrigger>
         </TabsList>
