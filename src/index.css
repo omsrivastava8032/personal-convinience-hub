@@ -60,5 +60,12 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 15% 50%, hsl(var(--secondary) / 0.25), transparent 35%),
+      radial-gradient(circle at 85% 40%, hsl(var(--primary) / 0.15), transparent 40%);
   }
 }
