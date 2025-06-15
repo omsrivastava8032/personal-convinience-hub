@@ -1,4 +1,3 @@
-
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 
@@ -71,6 +70,11 @@ Deno.serve(async (req: Request) => {
         let errorMessage = 'Failed to fetch calendar events.';
         if (calendarResponse.status === 401) {
             errorMessage = 'Your Google authentication has expired. Please sign out and sign back in with Google.';
+        } else if (
+          calendarResponse.status === 403 &&
+          errorBody?.error?.message?.includes('Google Calendar API has not been used')
+        ) {
+          errorMessage = 'The Google Calendar API is not enabled for your project.';
         }
         
         return new Response(JSON.stringify({ error: errorMessage, details: errorBody }), {
