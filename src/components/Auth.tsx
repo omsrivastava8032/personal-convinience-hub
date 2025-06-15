@@ -76,7 +76,7 @@ export default function Auth({ children }: { children?: ReactNode }) {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/`,
-        scopes: 'https://www.googleapis.com/auth/calendar.readonly',
+        scopes: 'https://www.googleapis.com/auth/calendar.events',
       },
     });
     if (error) {
