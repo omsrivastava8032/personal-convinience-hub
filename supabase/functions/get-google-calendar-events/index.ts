@@ -35,7 +35,7 @@ Deno.serve(async (req: Request) => {
     if (integrationError || !integration) {
       console.error('Integration error:', integrationError);
       return new Response(JSON.stringify({ error: 'Google Calendar not linked.' }), {
-        status: 404,
+        status: 200, // Return 200 with error in body for easier client handling
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -67,8 +67,14 @@ Deno.serve(async (req: Request) => {
     if (!calendarResponse.ok) {
         const errorBody = await calendarResponse.json();
         console.error('Google Calendar API error:', errorBody);
-        return new Response(JSON.stringify({ error: 'Failed to fetch calendar events.', details: errorBody }), {
-            status: calendarResponse.status,
+        
+        let errorMessage = 'Failed to fetch calendar events.';
+        if (calendarResponse.status === 401) {
+            errorMessage = 'Your Google authentication has expired. Please sign out and sign back in with Google.';
+        }
+        
+        return new Response(JSON.stringify({ error: errorMessage, details: errorBody }), {
+            status: 200, // Return 200 with error in body
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     }

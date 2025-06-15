@@ -112,19 +112,22 @@ const GoogleCalendar: React.FC = () => {
   if (isError) {
     console.error('Calendar error:', error);
     const isNotLinked = error.message === 'Google Calendar not linked.';
+    const needsReAuth = error.message.includes('authentication has expired');
     return (
       <Alert variant="destructive" className="max-w-xl mx-auto">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Oops! Something went wrong.</AlertTitle>
         <AlertDescription>
-          {isNotLinked 
+          {isNotLinked
             ? "It seems your Google Calendar is not linked. Please sign out and sign back in with Google, ensuring you grant calendar access."
+            : needsReAuth
+            ? "Your Google authentication seems to have expired. Please re-authenticate to see your calendar."
             : `Failed to load calendar events: ${error.message}`
           }
-          {isNotLinked && (
+          {(isNotLinked || needsReAuth) && (
              <Button
                 variant="link"
-                className="p-0 h-auto mt-2 text-destructive"
+                className="p-0 h-auto mt-2 text-destructive block"
                 onClick={async () => {
                     await supabase.auth.signOut();
                     navigate('/auth');
