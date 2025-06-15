@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
   const visibleNavItems = navItemsConfig.filter(item => !item.private || isLoggedIn);
 
   return (
-    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
+    <nav className="bg-background/90 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
