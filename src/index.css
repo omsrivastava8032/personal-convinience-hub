@@ -61,5 +61,10 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-attachment: fixed;
+    transition: background-color 0.3s ease;
+  }
+
+  .light body {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath fill-rule='evenodd' d='M11 0l5 20-5-5-5 5L11 0zm22 11l20 5-5-5-5 5-10-5zM0 22l5 20-5-5-5 5L0 22zm55 0l20-5-5 5-5-5-10 5zM11 44l5 20-5-5-5 5L11 44zm22 11l20 5-5-5-5 5-10-5zM0 66l5 20-5-5-5 5L0 66zm55 0l20-5-5 5-5-5-10 5z'/%3E%3C/g%3E%3C/svg%3E");
   }
 }
