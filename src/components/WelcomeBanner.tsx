@@ -20,7 +20,7 @@ const WelcomeBanner: React.FC = () => {
         <AvatarUpdater />
       ) : (
         <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-primary/20">
-          <AvatarImage src={undefined} alt={name} />
+          <AvatarImage src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=300&fit=crop" alt="A beautiful mountain landscape" />
           <AvatarFallback>
             <UserCircle className="w-full h-full text-muted-foreground" />
           </AvatarFallback>
