@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { CalendarEvent } from '@/types/google-calendar';
 
@@ -30,7 +29,7 @@ export const fetchGoogleCalendarEvents = async (): Promise<CalendarEvent[]> => {
   return data as CalendarEvent[];
 };
 
-type CreateEventInput = {
+export type CreateEventInput = {
   summary: string;
   description?: string;
   startDateTime: string;

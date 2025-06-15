@@ -27,8 +27,9 @@ import {
 import { useCreateGoogleCalendarEvent } from '@/hooks/useCreateGoogleCalendarEvent';
 import { CalendarPlus, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { CreateEventInput } from '@/services/googleCalendarService';
 
-const eventSchema = z.object({
+const eventSchema: z.ZodType<CreateEventInput> = z.object({
     summary: z.string().min(1, 'Summary is required.'),
     description: z.string().optional(),
     startDateTime: z.string().min(1, 'Start date and time are required.'),
@@ -58,7 +59,7 @@ export const AddEventDialog = ({ selectedDay }: { selectedDay?: Date }) => {
         return format(d, "yyyy-MM-dd'T'HH:mm");
     }
 
-    const form = useForm<z.infer<typeof eventSchema>>({
+    const form = useForm<CreateEventInput>({
         resolver: zodResolver(eventSchema),
         defaultValues: {
             summary: '',
@@ -79,7 +80,7 @@ export const AddEventDialog = ({ selectedDay }: { selectedDay?: Date }) => {
         }
     }, [selectedDay, form]);
     
-    function onSubmit(values: z.infer<typeof eventSchema>) {
+    function onSubmit(values: CreateEventInput) {
         mutate(values);
     }
     
@@ -119,7 +120,7 @@ export const AddEventDialog = ({ selectedDay }: { selectedDay?: Date }) => {
                                 <FormItem>
                                     <FormLabel>Description (optional)</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="Discuss quarterly results" {...field} />
+                                        <Textarea placeholder="Discuss quarterly results" {...field} value={field.value ?? ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
