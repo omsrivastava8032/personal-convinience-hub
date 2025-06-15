@@ -34,7 +34,8 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
             <Code2 size={28} />
-            <span className="font-semibold text-xl">Personal Convenience Hub</span>
+            <span className="font-semibold text-xl hidden md:inline whitespace-nowrap">Personal Convenience Hub</span>
+            <span className="font-semibold text-xl md:hidden">P.C. Hub</span>
           </Link>
           <div className="flex items-center space-x-1">
             {visibleNavItems.map((item) => (
