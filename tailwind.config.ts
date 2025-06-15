@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -84,11 +85,17 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+        'pan-image': {
+          '0%': { backgroundPosition: '0% center' },
+          '50%': { backgroundPosition: '100% center' },
+          '100%': { backgroundPosition: '0% center' },
+        },
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+        'pan-image': 'pan-image 90s linear infinite',
 			}
 		}
 	},
