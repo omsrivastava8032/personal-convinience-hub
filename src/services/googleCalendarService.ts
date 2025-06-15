@@ -29,3 +29,44 @@ export const fetchGoogleCalendarEvents = async (): Promise<CalendarEvent[]> => {
   console.log('Successfully fetched calendar events:', data.length);
   return data as CalendarEvent[];
 };
+
+type CreateEventInput = {
+  summary: string;
+  description?: string;
+  startDateTime: string;
+  endDateTime: string;
+};
+
+export const createGoogleCalendarEvent = async (event: CreateEventInput): Promise<CalendarEvent> => {
+  console.log('Creating Google Calendar event...', event);
+
+  const newEventPayload = {
+    summary: event.summary,
+    description: event.description,
+    start: {
+      dateTime: new Date(event.startDateTime).toISOString(),
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+    end: {
+      dateTime: new Date(event.endDateTime).toISOString(),
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+  };
+
+  const { data, error } = await supabase.functions.invoke('create-google-calendar-event', {
+    body: newEventPayload,
+  });
+
+  if (error) {
+    console.error('Supabase function error:', error);
+    throw new Error(error.message);
+  }
+
+  if (data?.error) {
+    console.error('Function returned error:', data.error);
+    throw new Error(data.error);
+  }
+
+  console.log('Successfully created calendar event:', data);
+  return data as CalendarEvent;
+};

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { CalendarEvent } from '@/types/google-calendar';
+import { AddEventDialog } from './AddEventDialog';
 
 interface EventListProps {
   selectedDay: Date | undefined;
@@ -14,11 +15,14 @@ interface EventListProps {
 export const EventList: React.FC<EventListProps> = ({ selectedDay, events }) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>
-          Events for {selectedDay ? format(selectedDay, 'PPP') : 'Today'}
-        </CardTitle>
-        <CardDescription>You have {events.length} event(s) today.</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div>
+          <CardTitle>
+            Events for {selectedDay ? format(selectedDay, 'PPP') : 'Today'}
+          </CardTitle>
+          <CardDescription>You have {events.length} event(s) today.</CardDescription>
+        </div>
+        <AddEventDialog selectedDay={selectedDay} />
       </CardHeader>
       <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
         {events.length > 0 ? (
