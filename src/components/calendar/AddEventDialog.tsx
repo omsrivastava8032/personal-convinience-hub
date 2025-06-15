@@ -29,7 +29,7 @@ import { CalendarPlus, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { CreateEventInput } from '@/services/googleCalendarService';
 
-const eventSchema: z.ZodType<CreateEventInput> = z.object({
+const eventSchema = z.object({
     summary: z.string().min(1, 'Summary is required.'),
     description: z.string().optional(),
     startDateTime: z.string().min(1, 'Start date and time are required.'),
