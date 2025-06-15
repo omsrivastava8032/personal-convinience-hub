@@ -15,7 +15,7 @@ const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ title, href, icon: Icon, 
   const isExternal = href.startsWith('http');
 
   const cardContent = (
-    <Card className="h-full flex flex-col hover:border-primary/80 hover:shadow-lg transition-all group">
+    <Card className="h-full flex flex-col hover:border-primary/80 hover:shadow-lg transition-all group hover:scale-[1.03] duration-300">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-xl font-semibold">{title}</CardTitle>
         <Icon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />

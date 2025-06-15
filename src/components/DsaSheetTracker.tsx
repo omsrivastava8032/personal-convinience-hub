@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Circle, Search, BarChart3, Code, Star } from 'lucide-react';
 
@@ -233,7 +232,7 @@ const DsaSheetTracker = () => {
   return (
     <div className="max-w-7xl mx-auto p-2 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6 animate-fade-in">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">DSA Problem Tracker</h1>
@@ -277,19 +276,19 @@ const DsaSheetTracker = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-lg">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-lg transform hover:scale-105 transition-transform animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
             <div className="text-2xl font-bold">{completedProblems}</div>
             <div className="text-sm opacity-90">Completed</div>
           </div>
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-lg">
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-lg transform hover:scale-105 transition-transform animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
             <div className="text-2xl font-bold">{totalProblems - completedProblems}</div>
             <div className="text-sm opacity-90">Remaining</div>
           </div>
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-lg">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-lg transform hover:scale-105 transition-transform animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
             <div className="text-2xl font-bold">{problems.filter(p => p.starred).length}</div>
             <div className="text-sm opacity-90">Starred</div>
           </div>
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg">
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg transform hover:scale-105 transition-transform animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}>
             <div className="text-2xl font-bold">{Object.keys(problemData).length}</div>
             <div className="text-sm opacity-90">Topics</div>
           </div>
@@ -299,7 +298,7 @@ const DsaSheetTracker = () => {
       {currentView === 'list' ? (
         <>
           {/* Filters */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-6 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Problems</label>
@@ -362,7 +361,7 @@ const DsaSheetTracker = () => {
           </div>
 
           {/* Problems List */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-max">
                 <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
@@ -376,7 +375,7 @@ const DsaSheetTracker = () => {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredProblems.map((problem) => (
-                    <tr key={problem.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${problem.completed ? 'bg-green-50 dark:bg-green-900/20' : ''}`}>
+                    <tr key={problem.id} className={`transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${problem.completed ? 'bg-green-50 dark:bg-green-900/20' : ''}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-3">
                           <button
@@ -440,7 +439,7 @@ const DsaSheetTracker = () => {
         </>
       ) : (
         /* Statistics View */
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in">
           {/* Topic-wise Progress */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Topic-wise Progress</h2>

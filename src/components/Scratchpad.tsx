@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,9 +19,9 @@ const Scratchpad: React.FC = () => {
   };
 
   return (
-    <section>
+    <section className="animate-fade-in">
         <h2 className="text-3xl font-semibold mb-6 text-center sm:text-left">Scratchpad</h2>
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-muted-foreground" />
