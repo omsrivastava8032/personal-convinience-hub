@@ -110,6 +110,8 @@ export const useDsaTracker = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCompleted, setShowCompleted] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
   useEffect(() => {
     let filtered = problems;
@@ -130,7 +132,18 @@ export const useDsaTracker = () => {
     }
 
     setFilteredProblems(filtered);
+    setCurrentPage(1);
   }, [problems, selectedTopic, selectedDifficulty, searchTerm, showCompleted]);
+
+  const paginatedProblems = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProblems.slice(startIndex, endIndex);
+  }, [filteredProblems, currentPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredProblems.length / itemsPerPage);
+  }, [filteredProblems]);
 
   const toggleProblem = (id: string) => {
     setProblems(problems.map(p => 
@@ -206,5 +219,9 @@ export const useDsaTracker = () => {
     toggleStar,
     problemData,
     stats,
+    paginatedProblems,
+    totalPages,
+    currentPage,
+    setCurrentPage,
   };
 };
