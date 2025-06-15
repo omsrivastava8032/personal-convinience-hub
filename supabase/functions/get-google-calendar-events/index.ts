@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
           errorMessage = 'The Google Calendar API is not enabled for your project.';
         }
         
-        return new Response(JSON.stringify({ error: errorMessage, details: errorBody }), {
+        return new Response(JSON.stringify({ error: errorMessage }), {
             status: 200, // Return 200 with error in body
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });

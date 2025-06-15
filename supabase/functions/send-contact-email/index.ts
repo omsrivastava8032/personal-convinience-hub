@@ -1,6 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@3.4.0"; // Updated to a recent version
+import { Resend } from "npm:resend@3.4.0";
+import DOMPurify from "npm:dompurify@3.1.0";
+import { JSDOM } from "npm:jsdom@24.0.0";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const DESTINATION_EMAIL = "omsri8032@gmail.com"; // User-provided email
@@ -38,6 +40,8 @@ serve(async (req: Request) => {
   }
 
   const resend = new Resend(RESEND_API_KEY);
+  const { window } = new JSDOM('<!DOCTYPE html>');
+  const purify = DOMPurify(window);
 
   try {
     const { name, email, message } = await req.json() as ContactFormData;
@@ -52,18 +56,22 @@ serve(async (req: Request) => {
       );
     }
 
-    console.log(`Received contact form submission: Name: ${name}, Email: ${email}, Message: ${message}`);
+    // Sanitize user-provided strings before including them in the email
+    const sanitizedName = purify.sanitize(name);
+    const sanitizedMessage = purify.sanitize(message);
+
+    console.log(`Received contact form submission: Name: ${sanitizedName}, Email: ${email}, Message: [sanitized]`);
 
     const { data, error } = await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>", // Using Resend's default for unverified domains
       to: [DESTINATION_EMAIL],
-      subject: `New Contact Form Submission from ${name}`,
+      subject: `New Contact Form Submission from ${sanitizedName}`,
       html: `
         <h1>New Contact Form Submission</h1>
-        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Name:</strong> ${sanitizedName}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
+        <p>${sanitizedMessage.replace(/\n/g, "<br>")}</p>
       `,
       reply_to: email, // Set reply-to for easy response
     });

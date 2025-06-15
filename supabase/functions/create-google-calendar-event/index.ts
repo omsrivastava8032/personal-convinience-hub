@@ -63,7 +63,18 @@ serve(async (req) => {
     if (!response.ok) {
       console.error('Google Calendar API error:', responseData)
       const errorMessage = responseData.error?.message || 'Failed to create calendar event.'
-      return new Response(JSON.stringify({ error: errorMessage }), {
+      let userFriendlyError = 'Failed to create calendar event due to a server error.';
+      if (response.status === 401) {
+          userFriendlyError = 'Your Google authentication has expired. Please sign out and sign back in with Google.';
+      } else if (response.status === 403) {
+          if (errorMessage.includes('insufficient authentication scopes')) {
+            userFriendlyError = 'You have not granted permission to create calendar events. Please sign out, sign back in with Google, and ensure you grant calendar access.';
+          } else {
+            userFriendlyError = 'You do not have permission to create this event in Google Calendar.';
+          }
+      }
+      
+      return new Response(JSON.stringify({ error: userFriendlyError }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: response.status,
       })

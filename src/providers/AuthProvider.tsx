@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -96,7 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   access_token: newSession.provider_token,
                   refresh_token: newSession.provider_refresh_token,
                   expires_at: newSession.expires_at ? new Date(newSession.expires_at * 1000).toISOString() : new Date(Date.now() + 3600 * 1000).toISOString(),
-                  scope: 'https://www.googleapis.com/auth/calendar.readonly'
+                  scope: 'https://www.googleapis.com/auth/calendar.events'
                 };
 
                 const { error } = await supabase
