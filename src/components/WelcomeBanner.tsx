@@ -15,7 +15,7 @@ const WelcomeBanner: React.FC = () => {
   const bio = profile?.bio || defaultBio;
 
   return (
-    <section className="bg-card p-8 rounded-xl shadow-lg flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 border animate-fade-in">
+    <section className="p-8 rounded-xl shadow-lg flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 animate-fade-in bg-card/60 backdrop-blur-md border border-card-foreground/20">
       {session ? (
         <AvatarUpdater />
       ) : (
