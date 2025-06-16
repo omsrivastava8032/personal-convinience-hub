@@ -80,8 +80,8 @@ const problemData = {
         "Subset sum equal to target", "Partition Equal Subset Sum", "Partition a set into two subsets with minimum absolute sum difference", "Count Subsets with Sum K", "Count Partitions with Given Difference",
         "0/1 Knapsack", "Minimum Coins", "Target Sum", "Coin Change 2", "Unbounded Knapsack", "Rod Cutting Problem",
         "Longest Increasing Subsequence", "Printing Longest Increasing Subsequence", "Longest Increasing Subsequence | Binary Search", "Largest Divisible Subset", "Longest String Chain", "Longest Bitonic Subsequence", "Number of Longest Increasing Subsequences",
-        "Longest Common Subsequence", "Print Longest Common Subsequence", "Longest Common Substring", "Longest Palindromic Subsequence", "Minimum insertions to make a string palindrome", "Minimum Insertions/Deletions to Convert String", "Shortest Common Supersequence", "Distinct Subsequences", "Edit Distance", "Wildcard Matching",
-        "Best Time to Buy and Sell Stock", "Buy and Sell Stock - II", "Buy and Sell Stocks III", "Buy and Sell Stock IV", "Buy and Sell Stocks With Cooldown", "Buy and Sell Stocks With Transaction Fee",
+        "Longest Common Subsequence", "Print Longest Common Subsequence", "Longest Common Substring", "Longest Palindromic Subsequence", "Minimum insertions to make a string palindrome", "Minimum insertions/Deletions to Convert String", "Shortest Common Supersequence", "Distinct Subsequences", "Edit Distance", "Wildcard Matching",
+        "Best Time to Buy and Sell Stock", "Buy and Sell Stock - II", "Buy and Sell Stocks III", "Buy and Sell Stocks IV", "Buy and Sell Stocks With Cooldown", "Buy and Sell Stocks With Transaction Fee",
         "Matrix Chain Multiplication", "Minimum Cost to Cut the Stick", "Burst Balloons", "Evaluate Boolean Expression to True", "Palindrome Partitioning - II", "Partition Array for Maximum Sum",
         "Maximum Rectangle Area with all 1's", "Count Square Submatrices with All Ones"
     ],
@@ -111,11 +111,11 @@ export const useDsaTracker = () => {
           id: problemId,
           name: problem,
           topic: topic,
-          completed: progress?.completed || false,
+          completed: progress?.is_completed || false,
           difficulty: (Math.random() > 0.6 ? 'Hard' : Math.random() > 0.3 ? 'Medium' : 'Easy') as 'Easy' | 'Medium' | 'Hard',
-          notes: progress?.notes || '',
-          completedDate: progress?.completed_date || null,
-          starred: progress?.starred || false
+          notes: '', // Notes not available in current schema
+          completedDate: null, // Completed date not available in current schema
+          starred: false // Starred not available in current schema
         };
       })
     );
@@ -141,13 +141,12 @@ export const useDsaTracker = () => {
 
     setFilteredProblems(filtered);
     
-    // Only reset to page 1 if filters change, not when problems are toggled
-    // Check if the current page would be invalid with the new filtered results
+    // Only reset to page 1 if filters change and current page would be invalid
     const newTotalPages = Math.ceil(filtered.length / itemsPerPage);
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(1);
     }
-  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems, currentPage]);
+  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems]);
 
   const paginatedProblems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -165,18 +164,13 @@ export const useDsaTracker = () => {
 
     const newCompleted = !problem.completed;
     updateProgress(id, {
-      completed: newCompleted,
-      completed_date: newCompleted ? new Date().toISOString().split('T')[0] : null,
+      is_completed: newCompleted,
     });
   };
 
   const toggleStar = (id: string) => {
-    const problem = problems.find(p => p.id === id);
-    if (!problem) return;
-
-    updateProgress(id, {
-      starred: !problem.starred,
-    });
+    // Star functionality not available with current schema
+    console.log('Star functionality not available with current database schema');
   };
 
   const stats = useMemo(() => {
@@ -208,7 +202,7 @@ export const useDsaTracker = () => {
       };
     });
     
-    const starredProblems = problems.filter(p => p.starred).length;
+    const starredProblems = 0; // Not available with current schema
 
     return {
       totalProblems,

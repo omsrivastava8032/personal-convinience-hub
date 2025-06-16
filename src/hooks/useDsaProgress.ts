@@ -4,11 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DsaProgress {
-  problem_id: string;
-  completed: boolean;
-  starred: boolean;
-  notes: string;
-  completed_date: string | null;
+  topic_id: string;
+  is_completed: boolean;
 }
 
 export const useDsaProgress = () => {
@@ -44,7 +41,7 @@ export const useDsaProgress = () => {
         .from('user_dsa_progress')
         .upsert({
           user_id: user.id,
-          problem_id: problemId,
+          topic_id: problemId,
           ...updates,
         });
 
@@ -56,7 +53,7 @@ export const useDsaProgress = () => {
   });
 
   const getProgress = (problemId: string) => {
-    return progressData.find(p => p.problem_id === problemId);
+    return progressData.find(p => p.topic_id === problemId);
   };
 
   const updateProgress = (problemId: string, updates: Partial<DsaProgress>) => {
