@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Problem } from '@/types/dsa';
 import { useDsaProgress } from './useDsaProgress';
 
@@ -117,26 +118,29 @@ export const useDsaTracker = () => {
 
   // Create problems with progress data - memoized to prevent re-creation
   const problems = useMemo(() => {
+    console.log('Creating problems, progressData:', progressData);
     return Object.entries(problemData).flatMap(([topic, problemNames]) =>
       problemNames.map((problem, index) => {
         const problemId = `${topic.replace(/\s+/g, '_').toLowerCase()}_${index}`;
         const progress = getProgress(problemId);
+        console.log(`Problem ${problemId}, progress:`, progress);
         
         return {
           id: problemId,
           name: problem,
           topic: topic,
           completed: progress?.is_completed || false,
-          difficulty: getDifficultyForProblem(problem), // Use stable difficulty assignment
-          notes: '', // Notes not available in current schema
-          completedDate: null, // Completed date not available in current schema
-          starred: false // Starred not available in current schema
+          difficulty: getDifficultyForProblem(problem),
+          notes: '',
+          completedDate: null,
+          starred: false
         };
       })
     );
   }, [progressData, getProgress]);
 
-  useEffect(() => {
+  // Stable filter function
+  const filterProblems = useCallback(() => {
     let filtered = problems;
 
     if (selectedTopic !== 'All') {
@@ -154,14 +158,20 @@ export const useDsaTracker = () => {
       filtered = filtered.filter(p => !p.completed);
     }
 
+    return filtered;
+  }, [problems, selectedTopic, selectedDifficulty, searchTerm, showCompleted]);
+
+  // Update filtered problems when filters or problems change
+  useEffect(() => {
+    const filtered = filterProblems();
     setFilteredProblems(filtered);
     
-    // Only reset to page 1 if filters change and current page would be invalid
+    // Reset to page 1 if current page would be invalid
     const newTotalPages = Math.ceil(filtered.length / itemsPerPage);
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(1);
     }
-  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems, currentPage, itemsPerPage]);
+  }, [filterProblems, currentPage, itemsPerPage]);
 
   const paginatedProblems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -173,21 +183,26 @@ export const useDsaTracker = () => {
     return Math.ceil(filteredProblems.length / itemsPerPage);
   }, [filteredProblems, itemsPerPage]);
 
-  const toggleProblem = (id: string) => {
+  const toggleProblem = useCallback((id: string) => {
+    console.log('Toggling problem:', id);
     const problem = problems.find(p => p.id === id);
-    if (!problem) return;
+    if (!problem) {
+      console.error('Problem not found:', id);
+      return;
+    }
 
     const newCompleted = !problem.completed;
+    console.log('Updating progress for:', id, 'to:', newCompleted);
+    
     updateProgress(id, {
       topic_id: id,
       is_completed: newCompleted,
     });
-  };
+  }, [problems, updateProgress]);
 
-  const toggleStar = (id: string) => {
-    // Star functionality not available with current schema
+  const toggleStar = useCallback((id: string) => {
     console.log('Star functionality not available with current database schema');
-  };
+  }, []);
 
   const stats = useMemo(() => {
     const totalProblems = problems.length;
@@ -218,7 +233,7 @@ export const useDsaTracker = () => {
       };
     });
     
-    const starredProblems = 0; // Not available with current schema
+    const starredProblems = 0;
 
     return {
       totalProblems,

@@ -37,15 +37,19 @@ export const useDsaProgress = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Use the problemId directly as topic_id since it's already a string
       const { error } = await supabase
         .from('user_dsa_progress')
         .upsert({
           user_id: user.id,
           topic_id: problemId,
-          ...updates,
+          is_completed: updates.is_completed || false,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating progress:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dsa-progress'] });
