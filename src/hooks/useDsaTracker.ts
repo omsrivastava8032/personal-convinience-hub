@@ -1,6 +1,6 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { Problem } from '@/types/dsa';
+import { useDsaProgress } from './useDsaProgress';
 
 const problemData = {
     "Learn the Basics": [
@@ -90,28 +90,36 @@ const problemData = {
     ]
 };
 
-const allProblems: Problem[] = Object.entries(problemData).flatMap(([topic, problems]) =>
-    problems.map((problem, index) => ({
-      id: `${topic.replace(/\s+/g, '_').toLowerCase()}_${index}`,
-      name: problem,
-      topic: topic,
-      completed: false,
-      difficulty: (Math.random() > 0.6 ? 'Hard' : Math.random() > 0.3 ? 'Medium' : 'Easy') as 'Easy' | 'Medium' | 'Hard',
-      notes: '',
-      completedDate: null,
-      starred: false
-    }))
-  );
-
 export const useDsaTracker = () => {
-  const [problems, setProblems] = useState<Problem[]>(allProblems);
-  const [filteredProblems, setFilteredProblems] = useState<Problem[]>(allProblems);
+  const { progressData, isLoading: progressLoading, getProgress, updateProgress } = useDsaProgress();
+  const [filteredProblems, setFilteredProblems] = useState<Problem[]>([]);
   const [selectedTopic, setSelectedTopic] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCompleted, setShowCompleted] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
+
+  // Create problems with progress data
+  const problems = useMemo(() => {
+    return Object.entries(problemData).flatMap(([topic, problemNames]) =>
+      problemNames.map((problem, index) => {
+        const problemId = `${topic.replace(/\s+/g, '_').toLowerCase()}_${index}`;
+        const progress = getProgress(problemId);
+        
+        return {
+          id: problemId,
+          name: problem,
+          topic: topic,
+          completed: progress?.completed || false,
+          difficulty: (Math.random() > 0.6 ? 'Hard' : Math.random() > 0.3 ? 'Medium' : 'Easy') as 'Easy' | 'Medium' | 'Hard',
+          notes: progress?.notes || '',
+          completedDate: progress?.completed_date || null,
+          starred: progress?.starred || false
+        };
+      })
+    );
+  }, [progressData, getProgress]);
 
   useEffect(() => {
     let filtered = problems;
@@ -152,21 +160,23 @@ export const useDsaTracker = () => {
   }, [filteredProblems]);
 
   const toggleProblem = (id: string) => {
-    setProblems(problems.map(p => 
-      p.id === id 
-        ? { 
-            ...p, 
-            completed: !p.completed,
-            completedDate: !p.completed ? new Date().toISOString().split('T')[0] : null
-          }
-        : p
-    ));
+    const problem = problems.find(p => p.id === id);
+    if (!problem) return;
+
+    const newCompleted = !problem.completed;
+    updateProgress(id, {
+      completed: newCompleted,
+      completed_date: newCompleted ? new Date().toISOString().split('T')[0] : null,
+    });
   };
 
   const toggleStar = (id: string) => {
-    setProblems(problems.map(p => 
-      p.id === id ? { ...p, starred: !p.starred } : p
-    ));
+    const problem = problems.find(p => p.id === id);
+    if (!problem) return;
+
+    updateProgress(id, {
+      starred: !problem.starred,
+    });
   };
 
   const stats = useMemo(() => {
@@ -229,5 +239,6 @@ export const useDsaTracker = () => {
     totalPages,
     currentPage,
     setCurrentPage,
+    isLoading: progressLoading,
   };
 };
