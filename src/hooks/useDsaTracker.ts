@@ -132,8 +132,14 @@ export const useDsaTracker = () => {
     }
 
     setFilteredProblems(filtered);
-    setCurrentPage(1);
-  }, [problems, selectedTopic, selectedDifficulty, searchTerm, showCompleted]);
+    
+    // Only reset to page 1 if filters change, not when problems are toggled
+    // Check if the current page would be invalid with the new filtered results
+    const newTotalPages = Math.ceil(filtered.length / itemsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems, currentPage]);
 
   const paginatedProblems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
