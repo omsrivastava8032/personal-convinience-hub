@@ -90,6 +90,21 @@ const problemData = {
     ]
 };
 
+// Create a stable difficulty mapping based on problem name hash
+const getDifficultyForProblem = (problemName: string): 'Easy' | 'Medium' | 'Hard' => {
+  let hash = 0;
+  for (let i = 0; i < problemName.length; i++) {
+    const char = problemName.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  const normalized = Math.abs(hash) % 100;
+  if (normalized < 30) return 'Easy';
+  if (normalized < 70) return 'Medium';
+  return 'Hard';
+};
+
 export const useDsaTracker = () => {
   const { progressData, isLoading: progressLoading, getProgress, updateProgress } = useDsaProgress();
   const [filteredProblems, setFilteredProblems] = useState<Problem[]>([]);
@@ -100,7 +115,7 @@ export const useDsaTracker = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
-  // Create problems with progress data
+  // Create problems with progress data - memoized to prevent re-creation
   const problems = useMemo(() => {
     return Object.entries(problemData).flatMap(([topic, problemNames]) =>
       problemNames.map((problem, index) => {
@@ -112,7 +127,7 @@ export const useDsaTracker = () => {
           name: problem,
           topic: topic,
           completed: progress?.is_completed || false,
-          difficulty: (Math.random() > 0.6 ? 'Hard' : Math.random() > 0.3 ? 'Medium' : 'Easy') as 'Easy' | 'Medium' | 'Hard',
+          difficulty: getDifficultyForProblem(problem), // Use stable difficulty assignment
           notes: '', // Notes not available in current schema
           completedDate: null, // Completed date not available in current schema
           starred: false // Starred not available in current schema
@@ -146,17 +161,17 @@ export const useDsaTracker = () => {
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(1);
     }
-  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems]);
+  }, [selectedTopic, selectedDifficulty, searchTerm, showCompleted, problems, currentPage, itemsPerPage]);
 
   const paginatedProblems = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredProblems.slice(startIndex, endIndex);
-  }, [filteredProblems, currentPage]);
+  }, [filteredProblems, currentPage, itemsPerPage]);
 
   const totalPages = useMemo(() => {
     return Math.ceil(filteredProblems.length / itemsPerPage);
-  }, [filteredProblems]);
+  }, [filteredProblems, itemsPerPage]);
 
   const toggleProblem = (id: string) => {
     const problem = problems.find(p => p.id === id);
@@ -164,6 +179,7 @@ export const useDsaTracker = () => {
 
     const newCompleted = !problem.completed;
     updateProgress(id, {
+      topic_id: id,
       is_completed: newCompleted,
     });
   };
