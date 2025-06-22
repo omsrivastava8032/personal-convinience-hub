@@ -48,12 +48,15 @@ export const useDsaProgress = () => {
 
       console.log('Updating progress for problem:', problemId, 'updates:', updates);
 
+      // Store the problem ID as a string in topic_id field, not as UUID
       const { error } = await supabase
         .from('user_dsa_progress')
         .upsert({
           user_id: user.id,
-          topic_id: problemId,
+          topic_id: problemId, // Keep as string ID
           is_completed: updates.is_completed || false,
+        }, {
+          onConflict: 'user_id,topic_id'
         });
 
       if (error) {
