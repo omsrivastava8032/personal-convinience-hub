@@ -165,10 +165,17 @@ export const useDsaTracker = () => {
     const filtered = filterProblems();
     setFilteredProblems(filtered);
     
-    // Reset to page 1 if current page would be invalid
+    // Only reset to page 1 if current page would be invalid AND it's due to filter changes, not problem completion
     const newTotalPages = Math.ceil(filtered.length / itemsPerPage);
     if (currentPage > newTotalPages && newTotalPages > 0) {
-      setCurrentPage(1);
+      // Check if we're on the last page and it still has items
+      const currentPageStartIndex = (currentPage - 1) * itemsPerPage;
+      const currentPageHasItems = filtered.length > currentPageStartIndex;
+      
+      if (!currentPageHasItems) {
+        // Only reset to page 1 if the current page is completely empty
+        setCurrentPage(Math.max(1, newTotalPages));
+      }
     }
   }, [filterProblems, currentPage, itemsPerPage]);
 
