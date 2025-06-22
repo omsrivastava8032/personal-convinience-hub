@@ -5,6 +5,9 @@ import TrackerHeader from './dsa/TrackerHeader';
 import TrackerFilters from './dsa/TrackerFilters';
 import ProblemList from './dsa/ProblemList';
 import TrackerStats from './dsa/TrackerStats';
+import { Button } from '@/components/ui/button';
+import { LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   Pagination,
   PaginationContent,
@@ -16,6 +19,7 @@ import {
 } from "@/components/ui/pagination";
 
 const DsaSheetTracker: React.FC = () => {
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<'list' | 'stats'>('list');
   const {
     filteredProblems,
@@ -35,6 +39,7 @@ const DsaSheetTracker: React.FC = () => {
     totalPages,
     currentPage,
     setCurrentPage,
+    isAuthenticated,
   } = useDsaTracker();
 
   const getDifficultyColor = (difficulty: string) => {
@@ -85,6 +90,26 @@ const DsaSheetTracker: React.FC = () => {
     return pages.filter((v,i,a) => a.indexOf(v) === i); // unique
   };
 
+  // Show login prompt if user is not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-7xl mx-auto p-2 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+          <LogIn className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            Authentication Required
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            Please log in to track your DSA progress. Your progress will be saved and synced across all your devices.
+          </p>
+          <Button onClick={() => navigate('/auth')} className="inline-flex items-center">
+            <LogIn className="mr-2 h-4 w-4" />
+            Go to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-2 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">

@@ -107,7 +107,7 @@ const getDifficultyForProblem = (problemName: string): 'Easy' | 'Medium' | 'Hard
 };
 
 export const useDsaTracker = () => {
-  const { progressData, isLoading: progressLoading, getProgress, updateProgress } = useDsaProgress();
+  const { progressData, isLoading: progressLoading, getProgress, updateProgress, isAuthenticated } = useDsaProgress();
   const [filteredProblems, setFilteredProblems] = useState<Problem[]>([]);
   const [selectedTopic, setSelectedTopic] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
@@ -118,12 +118,11 @@ export const useDsaTracker = () => {
 
   // Create problems with progress data - memoized to prevent re-creation
   const problems = useMemo(() => {
-    console.log('Creating problems, progressData:', progressData);
+    console.log('Creating problems, progressData length:', progressData.length, 'isAuthenticated:', isAuthenticated);
     return Object.entries(problemData).flatMap(([topic, problemNames]) =>
       problemNames.map((problem, index) => {
         const problemId = `${topic.replace(/\s+/g, '_').toLowerCase()}_${index}`;
         const progress = getProgress(problemId);
-        console.log(`Problem ${problemId}, progress:`, progress);
         
         return {
           id: problemId,
@@ -137,7 +136,7 @@ export const useDsaTracker = () => {
         };
       })
     );
-  }, [progressData, getProgress]);
+  }, [progressData, getProgress, isAuthenticated]);
 
   // Stable filter function
   const filterProblems = useCallback(() => {
@@ -184,6 +183,11 @@ export const useDsaTracker = () => {
   }, [filteredProblems, itemsPerPage]);
 
   const toggleProblem = useCallback((id: string) => {
+    if (!isAuthenticated) {
+      console.error('Cannot toggle problem: user not authenticated');
+      return;
+    }
+
     console.log('Toggling problem:', id);
     const problem = problems.find(p => p.id === id);
     if (!problem) {
@@ -198,7 +202,7 @@ export const useDsaTracker = () => {
       topic_id: id,
       is_completed: newCompleted,
     });
-  }, [problems, updateProgress]);
+  }, [problems, updateProgress, isAuthenticated]);
 
   const toggleStar = useCallback((id: string) => {
     console.log('Star functionality not available with current database schema');
@@ -265,5 +269,6 @@ export const useDsaTracker = () => {
     currentPage,
     setCurrentPage,
     isLoading: progressLoading,
+    isAuthenticated,
   };
 };

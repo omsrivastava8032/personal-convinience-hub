@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/providers/AuthProvider';
 
 interface DsaProgress {
   topic_id: string;
@@ -10,34 +11,43 @@ interface DsaProgress {
 
 export const useDsaProgress = () => {
   const queryClient = useQueryClient();
+  const { user, session } = useAuth();
 
-  // Fetch user's DSA progress
+  // Fetch user's DSA progress - only when user is authenticated
   const { data: progressData = [], isLoading } = useQuery({
-    queryKey: ['dsa-progress'],
+    queryKey: ['dsa-progress', user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('user_dsa_progress')
-        .select('*');
-
-      if (error) {
-        console.error('Error fetching DSA progress:', error);
+      if (!user || !session) {
+        console.log('No authenticated user, returning empty progress');
         return [];
       }
 
+      console.log('Fetching DSA progress for user:', user.id);
+      const { data, error } = await supabase
+        .from('user_dsa_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching DSA progress:', error);
+        throw error;
+      }
+
+      console.log('Fetched DSA progress:', data);
       return data || [];
     },
+    enabled: !!user && !!session, // Only run query when user is authenticated
   });
 
   // Update progress mutation
   const updateProgressMutation = useMutation({
     mutationFn: async ({ problemId, updates }: { problemId: string; updates: Partial<DsaProgress> }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user || !session) {
+        throw new Error('User not authenticated');
+      }
 
-      // Use the problemId directly as topic_id since it's already a string
+      console.log('Updating progress for problem:', problemId, 'updates:', updates);
+
       const { error } = await supabase
         .from('user_dsa_progress')
         .upsert({
@@ -50,9 +60,14 @@ export const useDsaProgress = () => {
         console.error('Error updating progress:', error);
         throw error;
       }
+
+      console.log('Progress updated successfully');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dsa-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['dsa-progress', user?.id] });
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
     },
   });
 
@@ -61,6 +76,10 @@ export const useDsaProgress = () => {
   };
 
   const updateProgress = (problemId: string, updates: Partial<DsaProgress>) => {
+    if (!user || !session) {
+      console.error('Cannot update progress: user not authenticated');
+      return;
+    }
     updateProgressMutation.mutate({ problemId, updates });
   };
 
@@ -69,5 +88,6 @@ export const useDsaProgress = () => {
     isLoading,
     getProgress,
     updateProgress,
+    isAuthenticated: !!user && !!session,
   };
 };
