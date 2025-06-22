@@ -142,15 +142,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_dsa_progress_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "dsa_topics"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
