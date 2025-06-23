@@ -1,10 +1,12 @@
-
 import React, { useState } from 'react';
 import { useDsaTracker } from '@/hooks/useDsaTracker';
 import TrackerHeader from './dsa/TrackerHeader';
 import TrackerFilters from './dsa/TrackerFilters';
 import ProblemList from './dsa/ProblemList';
 import TrackerStats from './dsa/TrackerStats';
+import StreakWidget from './streak/StreakWidget';
+import HeatmapCalendar from './streak/HeatmapCalendar';
+import BadgeGallery from './badges/BadgeGallery';
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -113,6 +115,14 @@ const DsaSheetTracker: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-2 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      {/* Add streak and engagement widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <StreakWidget />
+        <div className="lg:col-span-2">
+          <HeatmapCalendar />
+        </div>
+      </div>
+
       <TrackerHeader
         stats={stats}
         currentView={currentView}
@@ -189,10 +199,13 @@ const DsaSheetTracker: React.FC = () => {
           )}
         </>
       ) : (
-        <TrackerStats
-          topicStats={stats.topicStats}
-          difficultyStats={stats.difficultyStats}
-        />
+        <div className="space-y-6">
+          <TrackerStats
+            topicStats={stats.topicStats}
+            difficultyStats={stats.difficultyStats}
+          />
+          <BadgeGallery />
+        </div>
       )}
     </div>
   );
