@@ -63,7 +63,10 @@ export const useStreakTracker = () => {
         .gte('date', oneYearAgo.toISOString().split('T')[0])
         .order('date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching daily stats:', error);
+        return [];
+      }
       return data as DailyStats[];
     },
     enabled: !!user,
