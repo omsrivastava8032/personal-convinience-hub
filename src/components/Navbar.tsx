@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,33 +48,7 @@ function ThemeToggle() {
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
-  const [profile, setProfile] = useState<{ full_name: string | null, avatar_url: string | null } | null>(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching profile:", error);
-        } else {
-          setProfile({
-            full_name: data?.full_name || null,
-            avatar_url: data?.avatar_url || null,
-          });
-        }
-      } else {
-        setProfile(null);
-      }
-    };
-
-    fetchProfile();
-  }, [user]);
+  const { user, signOut, avatarUrl, profile } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -103,7 +78,7 @@ export default function Navbar() {
                   <ProfileCalendarPopup>
                     <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || 'Profile'} />
+                        <AvatarImage src={avatarUrl || undefined} alt={profile?.full_name || 'Profile'} />
                         <AvatarFallback>
                           {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                         </AvatarFallback>

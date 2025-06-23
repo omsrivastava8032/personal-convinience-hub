@@ -9,7 +9,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 
 interface HeatmapDay {
   date: string;
@@ -111,19 +110,26 @@ const ProfileCalendarPopup: React.FC<ProfileCalendarPopupProps> = ({ children })
               <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
                 Last 3 months
               </div>
-              <div className="flex flex-wrap gap-1">
-                {weeks.map((week, weekIndex) => 
-                  <div key={weekIndex} className="flex flex-col gap-1">
-                    {week.map((day, dayIndex) => (
-                      <div
-                        key={`${weekIndex}-${dayIndex}`}
-                        className={`w-2.5 h-2.5 rounded-sm ${getColorClass(day.level)} hover:ring-1 hover:ring-green-400 cursor-pointer transition-all`}
-                        title={`${day.date}: ${day.count} problems solved`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              
+              {weeks.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  {weeks.map((week, weekIndex) => 
+                    <div key={weekIndex} className="flex flex-col gap-1">
+                      {week.map((day, dayIndex) => (
+                        <div
+                          key={`${weekIndex}-${dayIndex}`}
+                          className={`w-2.5 h-2.5 rounded-sm ${getColorClass(day.level)} hover:ring-1 hover:ring-green-400 cursor-pointer transition-all`}
+                          title={`${day.date}: ${day.count} problems solved`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-xs text-gray-500 text-center py-4">
+                  No activity data yet. Start solving problems!
+                </div>
+              )}
               
               <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                 <span>Less</span>
