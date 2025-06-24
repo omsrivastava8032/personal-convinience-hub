@@ -17,7 +17,6 @@ type AuthContextType = {
   loading: boolean;
   avatarUrl: string | null;
   updateProfileAvatarInContext: (avatarPath: string) => void;
-  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -74,16 +73,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setAvatarUrl(null);
     }
   }, []);
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
-      toast.error(`Error signing out: ${error.message}`);
-    } else {
-      toast.success('Signed out successfully');
-    }
-  };
 
   useEffect(() => {
     console.log('AuthProvider - setting up auth listener');
@@ -152,7 +141,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     loading,
     avatarUrl,
     updateProfileAvatarInContext,
-    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

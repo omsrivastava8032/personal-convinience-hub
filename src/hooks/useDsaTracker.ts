@@ -205,20 +205,10 @@ export const useDsaTracker = () => {
     const newCompleted = !problem.completed;
     console.log('Updating progress for:', id, 'to:', newCompleted);
     
-    if (newCompleted) {
-      // Use the streak tracker's mark done method for completed problems
-      // This will handle streaks and badges automatically
-      updateProgress(id, {
-        topic_id: id,
-        is_completed: newCompleted,
-      });
-    } else {
-      // For uncompleting, just use the regular update
-      updateProgress(id, {
-        topic_id: id,
-        is_completed: newCompleted,
-      });
-    }
+    updateProgress(id, {
+      topic_id: id,
+      is_completed: newCompleted,
+    });
   }, [problems, updateProgress, isAuthenticated]);
 
   const toggleStar = useCallback((id: string) => {

@@ -1,120 +1,70 @@
-
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoonIcon, SunIcon, User } from "lucide-react";
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from "@/providers/AuthProvider";
-import ProfileCalendarPopup from './streak/ProfileCalendarPopup';
+import { Code2, Home, Briefcase, MessageSquare, FileText, LogIn, LogOut, Calendar, BookOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from '@/providers/AuthProvider';
 
-function ThemeToggle() {
-  const { setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+const navItemsConfig = [
+  { name: 'Home', path: '/', icon: Home, private: false },
+  { name: 'Projects', path: '/projects', icon: Briefcase, private: false },
+  { name: 'Learning', path: '/learning', icon: FileText, private: false },
+  { name: 'Calendar', path: '/calendar', icon: Calendar, private: true },
+  { name: 'Resume & Contact', path: '/resume', icon: MessageSquare, private: false },
+];
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <SunIcon className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <MoonIcon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-export default function Navbar() {
+const Navbar: React.FC = () => {
+  const { session } = useAuth();
   const navigate = useNavigate();
-  const { user, signOut, avatarUrl, profile } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
   };
+  
+  // A more robust check for a valid, active session.
+  const isLoggedIn = !!(session?.user && session?.access_token);
+  
+  const visibleNavItems = navItemsConfig.filter(item => !item.private || isLoggedIn);
 
   return (
-    <nav className="border-b bg-white/80 backdrop-blur-md dark:bg-gray-900/80 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="text-lg font-semibold">
-              DSA.
-            </Link>
-            <div className="ml-8 space-x-4">
-              <Link to="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-                Tracker
-              </Link>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ProfileCalendarPopup>
-                    <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={avatarUrl || undefined} alt={profile?.full_name || 'Profile'} />
-                        <AvatarFallback>
-                          {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </ProfileCalendarPopup>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      {profile?.full_name && (
-                        <p className="font-medium">{profile.full_name}</p>
-                      )}
-                      {user.email && (
-                        <p className="w-[200px] truncate text-sm text-muted-foreground">
-                          {user.email}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
+            <Code2 size={28} />
+            <span className="font-semibold text-xl hidden md:inline whitespace-nowrap">Personal Convenience Hub</span>
+            <span className="font-semibold text-xl md:hidden">P.C. Hub</span>
+          </Link>
+          <div className="flex items-center space-x-1">
+            {visibleNavItems.map((item) => (
+              <Button key={item.name} variant="ghost" asChild>
+                <Link to={item.path} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                  <item.icon size={18} className="hidden sm:inline-block" />
+                  <span>{item.name}</span>
+                </Link>
+              </Button>
+            ))}
+            {isLoggedIn ? (
+              <Button variant="ghost" onClick={handleLogout} className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                <LogOut size={18} className="hidden sm:inline-block" />
+                <span>Logout</span>
+              </Button>
             ) : (
-              <Button onClick={() => navigate('/auth')}>
-                Sign In
+              <Button variant="ghost" asChild>
+                <Link to="/auth" className="flex items-center space-x-1.5 px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                  <LogIn size={18} className="hidden sm:inline-block" />
+                  <span>Login</span>
+                </Link>
               </Button>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

@@ -1,10 +1,10 @@
+
 import React, { useState } from 'react';
 import { useDsaTracker } from '@/hooks/useDsaTracker';
 import TrackerHeader from './dsa/TrackerHeader';
 import TrackerFilters from './dsa/TrackerFilters';
 import ProblemList from './dsa/ProblemList';
 import TrackerStats from './dsa/TrackerStats';
-import BadgeGallery from './badges/BadgeGallery';
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -189,13 +189,10 @@ const DsaSheetTracker: React.FC = () => {
           )}
         </>
       ) : (
-        <div className="space-y-6">
-          <TrackerStats
-            topicStats={stats.topicStats}
-            difficultyStats={stats.difficultyStats}
-          />
-          <BadgeGallery />
-        </div>
+        <TrackerStats
+          topicStats={stats.topicStats}
+          difficultyStats={stats.difficultyStats}
+        />
       )}
     </div>
   );
