@@ -63,12 +63,12 @@ const ProfileCalendarPopup: React.FC<ProfileCalendarPopupProps> = ({ children })
 
   const getColorClass = (level: number): string => {
     switch (level) {
-      case 0: return 'bg-gray-100 dark:bg-gray-800';
-      case 1: return 'bg-green-200 dark:bg-green-900';
-      case 2: return 'bg-green-300 dark:bg-green-700';
-      case 3: return 'bg-green-400 dark:bg-green-600';
-      case 4: return 'bg-green-500 dark:bg-green-500';
-      default: return 'bg-gray-100 dark:bg-gray-800';
+      case 0: return 'bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600';
+      case 1: return 'bg-green-300 dark:bg-green-800 border border-green-400 dark:border-green-700';
+      case 2: return 'bg-green-400 dark:bg-green-700 border border-green-500 dark:border-green-600';
+      case 3: return 'bg-green-500 dark:bg-green-600 border border-green-600 dark:border-green-500';
+      case 4: return 'bg-green-600 dark:bg-green-500 border border-green-700 dark:border-green-400';
+      default: return 'bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600';
     }
   };
 
@@ -85,7 +85,7 @@ const ProfileCalendarPopup: React.FC<ProfileCalendarPopupProps> = ({ children })
       <PopoverTrigger asChild>
         {children}
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent className="w-80 p-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800" align="end">
         <Card className="border-0 shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
