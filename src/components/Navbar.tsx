@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { MoonIcon, SunIcon, User } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "@/providers/AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
 import ProfileCalendarPopup from './streak/ProfileCalendarPopup';
 
 function ThemeToggle() {
@@ -86,19 +85,26 @@ export default function Navbar() {
                     </Button>
                   </ProfileCalendarPopup>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <div className="grid gap-2 px-2">
-                    <div className="px-2 py-1.5 text-sm font-semibold text-gray-800 dark:text-gray-100">
-                      {profile?.full_name || 'Profile'}
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      {profile?.full_name && (
+                        <p className="font-medium">{profile.full_name}</p>
+                      )}
+                      {user.email && (
+                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          {user.email}
+                        </p>
+                      )}
                     </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/profile')}>
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      Sign Out
-                    </DropdownMenuItem>
                   </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    Sign Out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
