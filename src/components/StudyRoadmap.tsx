@@ -1,10 +1,10 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Calendar, 
   Code2, 
@@ -17,11 +17,51 @@ import {
   TrendingUp,
   BookOpen,
   Brain,
-  Zap
+  Zap,
+  RotateCcw
 } from 'lucide-react';
+
+interface ProgressState {
+  [key: string]: boolean;
+}
 
 const StudyRoadmap: React.FC = () => {
   const [selectedPhase, setSelectedPhase] = useState('phase1');
+  const [progress, setProgress] = useState<ProgressState>({});
+
+  // Load progress from localStorage on component mount
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('roadmap-progress');
+    if (savedProgress) {
+      setProgress(JSON.parse(savedProgress));
+    }
+  }, []);
+
+  // Save progress to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('roadmap-progress', JSON.stringify(progress));
+  }, [progress]);
+
+  const toggleProgress = (key: string) => {
+    setProgress(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const resetProgress = () => {
+    if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
+      setProgress({});
+      localStorage.removeItem('roadmap-progress');
+    }
+  };
+
+  const calculatePhaseProgress = (phaseId: string) => {
+    const phaseKeys = Object.keys(progress).filter(key => key.startsWith(phaseId));
+    if (phaseKeys.length === 0) return 0;
+    const completed = phaseKeys.filter(key => progress[key]).length;
+    return Math.round((completed / phaseKeys.length) * 100);
+  };
 
   const phases = [
     {
@@ -118,22 +158,26 @@ const StudyRoadmap: React.FC = () => {
 
   const milestones = [
     {
+      id: 'milestone-1',
       date: 'End of July 2025',
       achievements: ['100+ DSA problems solved', 'HTML/CSS/JavaScript fundamentals complete', 'Basic aptitude foundation'],
       status: 'upcoming'
     },
     {
+      id: 'milestone-2',
       date: 'End of October 2025',
       achievements: ['400+ DSA problems solved', 'React + Node.js proficiency', 'Aptitude speed improved'],
       status: 'upcoming'
     },
     {
+      id: 'milestone-3',
       date: 'End of December 2025',
       achievements: ['800+ DSA problems solved (COMPLETE)', 'Full-stack development skills', 'Interview ready'],
       status: 'upcoming',
       major: true
     },
     {
+      id: 'milestone-4',
       date: 'March 2026',
       achievements: ['All subjects mastered', 'Strong portfolio', 'Placement ready'],
       status: 'upcoming',
@@ -141,8 +185,23 @@ const StudyRoadmap: React.FC = () => {
     }
   ];
 
+  const overallProgress = () => {
+    const totalItems = Object.keys(progress).length;
+    if (totalItems === 0) return 0;
+    const completedItems = Object.values(progress).filter(Boolean).length;
+    return Math.round((completedItems / totalItems) * 100);
+  };
+
   return (
     <div className="space-y-8">
+      {/* Progress Reset Button */}
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" onClick={resetProgress} className="flex items-center gap-2">
+          <RotateCcw className="h-4 w-4" />
+          Reset Progress
+        </Button>
+      </div>
+
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
@@ -186,8 +245,8 @@ const StudyRoadmap: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Zap className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Daily Hours</p>
-                <p className="text-2xl font-bold">6.5</p>
+                <p className="text-sm text-muted-foreground">Overall Progress</p>
+                <p className="text-2xl font-bold">{overallProgress()}%</p>
               </div>
             </div>
           </CardContent>
@@ -204,39 +263,42 @@ const StudyRoadmap: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {phases.map((phase, index) => (
-              <div key={phase.id} className="relative">
-                <div className="flex items-start space-x-4">
-                  <div className={`w-12 h-12 rounded-full ${phase.color} flex items-center justify-center text-white font-bold`}>
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">{phase.title}</h3>
-                      <Badge variant="secondary">{phase.duration}</Badge>
+            {phases.map((phase, index) => {
+              const phaseProgress = calculatePhaseProgress(phase.id);
+              return (
+                <div key={phase.id} className="relative">
+                  <div className="flex items-start space-x-4">
+                    <div className={`w-12 h-12 rounded-full ${phase.color} flex items-center justify-center text-white font-bold`}>
+                      {index + 1}
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">{phase.priority}</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {phase.focus.map((focus) => (
-                        <Badge key={focus} variant="outline" className="text-xs">
-                          {focus}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="mt-3">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Progress</span>
-                        <span>0%</span>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">{phase.title}</h3>
+                        <Badge variant="secondary">{phase.duration}</Badge>
                       </div>
-                      <Progress value={0} className="h-2" />
+                      <p className="text-sm text-muted-foreground mt-1">{phase.priority}</p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {phase.focus.map((focus) => (
+                          <Badge key={focus} variant="outline" className="text-xs">
+                            {focus}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="mt-3">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Progress</span>
+                          <span>{phaseProgress}%</span>
+                        </div>
+                        <Progress value={phaseProgress} className="h-2" />
+                      </div>
                     </div>
                   </div>
+                  {index < phases.length - 1 && (
+                    <div className="absolute left-6 top-12 w-0.5 h-8 bg-border"></div>
+                  )}
                 </div>
-                {index < phases.length - 1 && (
-                  <div className="absolute left-6 top-12 w-0.5 h-8 bg-border"></div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -265,46 +327,55 @@ const StudyRoadmap: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {month.weeks.map((week, index) => (
-                    <Card key={index} className="border-l-4 border-primary">
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold text-primary mb-2">Week {index + 1}: {week.title}</h4>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-sm font-medium flex items-center gap-1">
-                              <Code2 className="h-4 w-4" />
-                              DSA Topics:
-                            </p>
-                            <ul className="text-xs text-muted-foreground ml-5 list-disc">
-                              {week.topics.map((topic, i) => (
-                                <li key={i}>{topic}</li>
-                              ))}
-                            </ul>
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              {week.problems}
-                            </Badge>
+                  {month.weeks.map((week, index) => {
+                    const weekId = `${month.month.replace(' ', '_').toLowerCase()}_week_${index + 1}`;
+                    return (
+                      <Card key={index} className="border-l-4 border-primary">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-primary">Week {index + 1}: {week.title}</h4>
+                            <Checkbox
+                              checked={progress[weekId] || false}
+                              onCheckedChange={() => toggleProgress(weekId)}
+                            />
                           </div>
                           
-                          <div>
-                            <p className="text-sm font-medium flex items-center gap-1">
-                              <Globe className="h-4 w-4" />
-                              Web Dev:
-                            </p>
-                            <p className="text-xs text-muted-foreground">{week.webDev}</p>
+                          <div className="space-y-3">
+                            <div>
+                              <p className="text-sm font-medium flex items-center gap-1">
+                                <Code2 className="h-4 w-4" />
+                                DSA Topics:
+                              </p>
+                              <ul className="text-xs text-muted-foreground ml-5 list-disc">
+                                {week.topics.map((topic, i) => (
+                                  <li key={i}>{topic}</li>
+                                ))}
+                              </ul>
+                              <Badge variant="secondary" className="mt-1 text-xs">
+                                {week.problems}
+                              </Badge>
+                            </div>
+                            
+                            <div>
+                              <p className="text-sm font-medium flex items-center gap-1">
+                                <Globe className="h-4 w-4" />
+                                Web Dev:
+                              </p>
+                              <p className="text-xs text-muted-foreground">{week.webDev}</p>
+                            </div>
+                            
+                            <div>
+                              <p className="text-sm font-medium flex items-center gap-1">
+                                <Brain className="h-4 w-4" />
+                                Aptitude:
+                              </p>
+                              <p className="text-xs text-muted-foreground">{week.aptitude}</p>
+                            </div>
                           </div>
-                          
-                          <div>
-                            <p className="text-sm font-medium flex items-center gap-1">
-                              <Brain className="h-4 w-4" />
-                              Aptitude:
-                            </p>
-                            <p className="text-xs text-muted-foreground">{week.aptitude}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -383,16 +454,22 @@ const StudyRoadmap: React.FC = () => {
         
         <TabsContent value="milestones" className="space-y-4">
           {milestones.map((milestone, index) => (
-            <Card key={index} className={milestone.major ? 'border-primary border-2' : ''}>
+            <Card key={milestone.id} className={milestone.major ? 'border-primary border-2' : ''}>
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    milestone.major ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                  }`}>
-                    {milestone.status === 'completed' ? 
-                      <CheckCircle2 className="h-5 w-5" /> : 
-                      <Circle className="h-5 w-5" />
-                    }
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      milestone.major ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    }`}>
+                      {progress[milestone.id] ? 
+                        <CheckCircle2 className="h-5 w-5" /> : 
+                        <Circle className="h-5 w-5" />
+                      }
+                    </div>
+                    <Checkbox
+                      checked={progress[milestone.id] || false}
+                      onCheckedChange={() => toggleProgress(milestone.id)}
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
@@ -404,12 +481,19 @@ const StudyRoadmap: React.FC = () => {
                       )}
                     </div>
                     <ul className="space-y-1">
-                      {milestone.achievements.map((achievement, i) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                          <CheckCircle2 className="h-3 w-3 text-green-500" />
-                          {achievement}
-                        </li>
-                      ))}
+                      {milestone.achievements.map((achievement, i) => {
+                        const achievementId = `${milestone.id}_achievement_${i}`;
+                        return (
+                          <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Checkbox
+                              checked={progress[achievementId] || false}
+                              onCheckedChange={() => toggleProgress(achievementId)}
+                              className="h-3 w-3"
+                            />
+                            <span className={progress[achievementId] ? 'line-through' : ''}>{achievement}</span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 </div>
