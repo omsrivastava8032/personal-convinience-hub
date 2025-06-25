@@ -15,6 +15,8 @@ export const useScratchpadNotes = () => {
     if (user) {
       fetchNotes();
     } else {
+      // Clear any localStorage data when signed out
+      localStorage.removeItem('scratchpad_notes');
       setNotes('');
       setLoading(false);
     }

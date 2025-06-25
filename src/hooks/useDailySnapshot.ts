@@ -15,6 +15,9 @@ export const useDailySnapshot = () => {
     if (user) {
       fetchTodaysSnapshot();
     } else {
+      // Clear any localStorage data when signed out
+      localStorage.removeItem('daily_focus');
+      localStorage.removeItem('working_on');
       setCurrentFocus('');
       setLoading(false);
     }
