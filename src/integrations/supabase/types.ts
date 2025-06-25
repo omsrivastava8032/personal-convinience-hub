@@ -9,6 +9,105 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      badges: {
+        Row: {
+          created_at: string
+          criteria_type: string
+          criteria_value: number
+          description: string
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          criteria_type: string
+          criteria_value: number
+          description: string
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          criteria_type?: string
+          criteria_value?: number
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      daily_snapshots: {
+        Row: {
+          created_at: string
+          current_focus: string | null
+          date: string
+          goals: string | null
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_focus?: string | null
+          date?: string
+          goals?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_focus?: string | null
+          date?: string
+          goals?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_stats: {
+        Row: {
+          created_at: string
+          date: string
+          easy_solved: number | null
+          hard_solved: number | null
+          id: string
+          medium_solved: number | null
+          problems_solved: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          easy_solved?: number | null
+          hard_solved?: number | null
+          id?: string
+          medium_solved?: number | null
+          problems_solved?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          easy_solved?: number | null
+          hard_solved?: number | null
+          id?: string
+          medium_solved?: number | null
+          problems_solved?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dsa_topics: {
         Row: {
           category: string
@@ -66,23 +165,38 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          best_streak: number | null
           bio: string | null
+          current_streak: number | null
+          freeze_tokens: number | null
           full_name: string | null
           id: string
+          last_solve_date: string | null
+          notification_time: string | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          best_streak?: number | null
           bio?: string | null
+          current_streak?: number | null
+          freeze_tokens?: number | null
           full_name?: string | null
           id: string
+          last_solve_date?: string | null
+          notification_time?: string | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          best_streak?: number | null
           bio?: string | null
+          current_streak?: number | null
+          freeze_tokens?: number | null
           full_name?: string | null
           id?: string
+          last_solve_date?: string | null
+          notification_time?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -116,6 +230,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      scratchpad_notes: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          awarded_at: string
+          badge_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_dsa_progress: {
         Row: {
