@@ -10,18 +10,18 @@ const Scratchpad: React.FC = () => {
   const { user } = useAuth();
   const { notes, loading, saving, saveNotes } = useScratchpadNotes();
   const [localNotes, setLocalNotes] = useState('');
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  console.log('Scratchpad render - notes:', notes, 'localNotes:', localNotes, 'loading:', loading, 'saving:', saving);
+  console.log('Scratchpad render - notes:', notes, 'localNotes:', localNotes, 'loading:', loading, 'saving:', saving, 'hasInitialized:', hasInitialized);
 
-  // Sync local notes with fetched notes only once when data is loaded
+  // Initialize local notes only once when data is first loaded
   React.useEffect(() => {
-    if (!loading && !isInitialized) {
-      console.log('Initializing localNotes with:', notes);
+    if (!loading && !hasInitialized) {
+      console.log('First time initializing localNotes with:', notes);
       setLocalNotes(notes);
-      setIsInitialized(true);
+      setHasInitialized(true);
     }
-  }, [notes, loading, isInitialized]);
+  }, [loading, hasInitialized, notes]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newNotes = e.target.value;
@@ -31,9 +31,9 @@ const Scratchpad: React.FC = () => {
 
   const handleBlur = () => {
     console.log('handleBlur called - localNotes:', localNotes, 'original notes:', notes);
-    // Save when user stops typing (on blur)
+    // Save when user stops typing (on blur) and content has changed
     if (localNotes !== notes) {
-      console.log('Saving notes...');
+      console.log('Saving notes because content changed...');
       saveNotes(localNotes);
     }
   };
