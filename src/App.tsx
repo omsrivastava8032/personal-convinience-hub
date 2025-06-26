@@ -14,7 +14,6 @@ import LearningPage from "./pages/LearningPage";
 import ResumePage from "./pages/ResumePage";
 import AuthPage from "./pages/AuthPage";
 import CalendarPage from "./pages/CalendarPage";
-import RoadmapPage from "./pages/RoadmapPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,7 +31,6 @@ const App = () => (
                 <Route path="/" element={<HomePage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
                 <Route path="/learning" element={<LearningPage />} />
-                <Route path="/roadmap" element={<RoadmapPage />} />
                 <Route path="/resume" element={<ResumePage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />

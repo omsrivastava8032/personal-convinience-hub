@@ -10,15 +10,11 @@ export const useScratchpadNotes = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  console.log('useScratchpadNotes - user:', !!user, 'notes:', notes, 'loading:', loading, 'saving:', saving);
-
   // Fetch notes when user changes
   useEffect(() => {
     if (user) {
       fetchNotes();
     } else {
-      // Clear any localStorage data when signed out
-      localStorage.removeItem('scratchpad_notes');
       setNotes('');
       setLoading(false);
     }
@@ -29,8 +25,6 @@ export const useScratchpadNotes = () => {
     
     try {
       setLoading(true);
-      console.log('Fetching notes for user:', user.id);
-      
       const { data, error } = await supabase
         .from('scratchpad_notes')
         .select('content')
@@ -43,9 +37,7 @@ export const useScratchpadNotes = () => {
         return;
       }
 
-      const fetchedNotes = data?.content || '';
-      console.log('Fetched notes:', fetchedNotes);
-      setNotes(fetchedNotes);
+      setNotes(data?.content || '');
     } catch (error) {
       console.error('Error fetching scratchpad notes:', error);
       toast.error('Failed to load notes');
@@ -59,36 +51,14 @@ export const useScratchpadNotes = () => {
 
     try {
       setSaving(true);
-      console.log('Saving notes:', newNotes);
-      
-      // First try to update existing record
-      const { data: existingData } = await supabase
+      const { error } = await supabase
         .from('scratchpad_notes')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      let error;
-      
-      if (existingData) {
-        // Update existing record
-        console.log('Updating existing record');
-        const result = await supabase
-          .from('scratchpad_notes')
-          .update({ content: newNotes })
-          .eq('user_id', user.id);
-        error = result.error;
-      } else {
-        // Insert new record
-        console.log('Inserting new record');
-        const result = await supabase
-          .from('scratchpad_notes')
-          .insert({
-            user_id: user.id,
-            content: newNotes,
-          });
-        error = result.error;
-      }
+        .upsert({
+          user_id: user.id,
+          content: newNotes,
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) {
         console.error('Error saving scratchpad notes:', error);
@@ -97,8 +67,6 @@ export const useScratchpadNotes = () => {
       }
 
       setNotes(newNotes);
-      toast.success('Notes saved');
-      console.log('Notes saved successfully');
     } catch (error) {
       console.error('Error saving scratchpad notes:', error);
       toast.error('Failed to save notes');

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { FileText, Loader2 } from 'lucide-react';
@@ -9,33 +9,10 @@ import { useAuth } from '@/providers/AuthProvider';
 const Scratchpad: React.FC = () => {
   const { user } = useAuth();
   const { notes, loading, saving, saveNotes } = useScratchpadNotes();
-  const [localNotes, setLocalNotes] = useState('');
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  console.log('Scratchpad render - notes:', notes, 'localNotes:', localNotes, 'loading:', loading, 'saving:', saving, 'hasInitialized:', hasInitialized);
-
-  // Initialize local notes only once when data is first loaded
-  React.useEffect(() => {
-    if (!loading && !hasInitialized) {
-      console.log('First time initializing localNotes with:', notes);
-      setLocalNotes(notes);
-      setHasInitialized(true);
-    }
-  }, [loading, hasInitialized, notes]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newNotes = e.target.value;
-    console.log('handleChange called with:', newNotes);
-    setLocalNotes(newNotes);
-  };
-
-  const handleBlur = () => {
-    console.log('handleBlur called - localNotes:', localNotes, 'original notes:', notes);
-    // Save when user stops typing (on blur) and content has changed
-    if (localNotes !== notes) {
-      console.log('Saving notes because content changed...');
-      saveNotes(localNotes);
-    }
+    saveNotes(newNotes);
   };
 
   if (!user) {
@@ -71,7 +48,7 @@ const Scratchpad: React.FC = () => {
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           </CardTitle>
           <CardDescription>
-            Jot down anything that's on your mind. Your notes are saved automatically when you finish typing.
+            Jot down anything that's on your mind. Your notes are saved automatically to your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -82,9 +59,8 @@ const Scratchpad: React.FC = () => {
           ) : (
             <Textarea
               placeholder="Type your notes here..."
-              value={localNotes}
+              value={notes}
               onChange={handleChange}
-              onBlur={handleBlur}
               className="min-h-[200px] text-base"
               disabled={saving}
             />
