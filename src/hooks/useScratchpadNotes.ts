@@ -10,6 +10,8 @@ export const useScratchpadNotes = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  console.log('useScratchpadNotes - user:', !!user, 'notes:', notes, 'loading:', loading, 'saving:', saving);
+
   // Fetch notes when user changes
   useEffect(() => {
     if (user) {
@@ -27,6 +29,8 @@ export const useScratchpadNotes = () => {
     
     try {
       setLoading(true);
+      console.log('Fetching notes for user:', user.id);
+      
       const { data, error } = await supabase
         .from('scratchpad_notes')
         .select('content')
@@ -39,7 +43,9 @@ export const useScratchpadNotes = () => {
         return;
       }
 
-      setNotes(data?.content || '');
+      const fetchedNotes = data?.content || '';
+      console.log('Fetched notes:', fetchedNotes);
+      setNotes(fetchedNotes);
     } catch (error) {
       console.error('Error fetching scratchpad notes:', error);
       toast.error('Failed to load notes');
@@ -53,6 +59,7 @@ export const useScratchpadNotes = () => {
 
     try {
       setSaving(true);
+      console.log('Saving notes:', newNotes);
       
       // First try to update existing record
       const { data: existingData } = await supabase
@@ -65,6 +72,7 @@ export const useScratchpadNotes = () => {
       
       if (existingData) {
         // Update existing record
+        console.log('Updating existing record');
         const result = await supabase
           .from('scratchpad_notes')
           .update({ content: newNotes })
@@ -72,6 +80,7 @@ export const useScratchpadNotes = () => {
         error = result.error;
       } else {
         // Insert new record
+        console.log('Inserting new record');
         const result = await supabase
           .from('scratchpad_notes')
           .insert({
@@ -89,6 +98,7 @@ export const useScratchpadNotes = () => {
 
       setNotes(newNotes);
       toast.success('Notes saved');
+      console.log('Notes saved successfully');
     } catch (error) {
       console.error('Error saving scratchpad notes:', error);
       toast.error('Failed to save notes');
