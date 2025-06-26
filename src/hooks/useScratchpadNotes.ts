@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
@@ -52,12 +53,33 @@ export const useScratchpadNotes = () => {
 
     try {
       setSaving(true);
-      const { error } = await supabase
+      
+      // First try to update existing record
+      const { data: existingData } = await supabase
         .from('scratchpad_notes')
-        .upsert({
-          user_id: user.id,
-          content: newNotes,
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      let error;
+      
+      if (existingData) {
+        // Update existing record
+        const result = await supabase
+          .from('scratchpad_notes')
+          .update({ content: newNotes })
+          .eq('user_id', user.id);
+        error = result.error;
+      } else {
+        // Insert new record
+        const result = await supabase
+          .from('scratchpad_notes')
+          .insert({
+            user_id: user.id,
+            content: newNotes,
+          });
+        error = result.error;
+      }
 
       if (error) {
         console.error('Error saving scratchpad notes:', error);

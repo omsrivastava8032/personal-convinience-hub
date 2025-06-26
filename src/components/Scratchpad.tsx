@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { FileText, Loader2 } from 'lucide-react';
@@ -9,10 +9,23 @@ import { useAuth } from '@/providers/AuthProvider';
 const Scratchpad: React.FC = () => {
   const { user } = useAuth();
   const { notes, loading, saving, saveNotes } = useScratchpadNotes();
+  const [localNotes, setLocalNotes] = useState('');
+
+  // Sync local notes with fetched notes
+  React.useEffect(() => {
+    setLocalNotes(notes);
+  }, [notes]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newNotes = e.target.value;
-    saveNotes(newNotes);
+    setLocalNotes(newNotes);
+  };
+
+  const handleBlur = () => {
+    // Save when user stops typing (on blur)
+    if (localNotes !== notes) {
+      saveNotes(localNotes);
+    }
   };
 
   if (!user) {
@@ -48,7 +61,7 @@ const Scratchpad: React.FC = () => {
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           </CardTitle>
           <CardDescription>
-            Jot down anything that's on your mind. Your notes are saved automatically to your account.
+            Jot down anything that's on your mind. Your notes are saved automatically when you finish typing.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -59,8 +72,9 @@ const Scratchpad: React.FC = () => {
           ) : (
             <Textarea
               placeholder="Type your notes here..."
-              value={notes}
+              value={localNotes}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="min-h-[200px] text-base"
               disabled={saving}
             />
