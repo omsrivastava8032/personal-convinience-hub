@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
@@ -58,8 +57,6 @@ export const useScratchpadNotes = () => {
         .upsert({
           user_id: user.id,
           content: newNotes,
-        }, {
-          onConflict: 'user_id'
         });
 
       if (error) {
@@ -69,6 +66,7 @@ export const useScratchpadNotes = () => {
       }
 
       setNotes(newNotes);
+      toast.success('Notes saved');
     } catch (error) {
       console.error('Error saving scratchpad notes:', error);
       toast.error('Failed to save notes');
