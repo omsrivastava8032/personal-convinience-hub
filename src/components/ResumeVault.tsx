@@ -40,13 +40,15 @@ const ResumeVault: React.FC = () => {
     },
   });
 
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const uploadMutation = useMutation({
     mutationFn: async ({ file, description }: { file: File, description: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated.");
 
       const filePath = `${user.id}/${Date.now()}_${file.name}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from('resumes')
         .upload(filePath, file);
@@ -70,11 +72,11 @@ const ResumeVault: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
       setFile(null);
       setDescription('');
-      if (document.getElementById('resume-file')) {
-        (document.getElementById('resume-file') as HTMLInputElement).value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(`Upload failed: ${err.message}`);
     },
   });
@@ -84,7 +86,7 @@ const ResumeVault: React.FC = () => {
       const { error: storageError } = await supabase.storage
         .from('resumes')
         .remove([resume.storage_path]);
-      
+
       if (storageError) throw storageError;
 
       const { error: dbError } = await supabase
@@ -98,11 +100,11 @@ const ResumeVault: React.FC = () => {
       toast.success(`"${deletedResume.file_name}" deleted.`);
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(`Deletion failed: ${err.message}`);
     },
   });
-  
+
   const handleDownload = async (resume: Resume) => {
     try {
       toast.info(`Preparing download for "${resume.file_name}"...`);
@@ -112,8 +114,9 @@ const ResumeVault: React.FC = () => {
 
       if (error) throw error;
       window.open(data.signedUrl, '_blank');
-    } catch (err: any) {
-      toast.error(`Download failed: ${err.message}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      toast.error(`Download failed: ${errorMessage}`);
     }
   };
 
@@ -143,6 +146,7 @@ const ResumeVault: React.FC = () => {
                 accept="application/pdf"
                 onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                 disabled={uploadMutation.isPending}
+                ref={fileInputRef}
               />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -175,19 +179,19 @@ const ResumeVault: React.FC = () => {
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(2)].map((_, i) => (
-                 <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-8 w-8" />
-                      <div className="space-y-1">
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-3 w-32" />
-                      </div>
+                <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-8 w-8" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-3 w-32" />
                     </div>
-                    <div className="flex gap-2">
-                       <Skeleton className="h-8 w-8" />
-                       <Skeleton className="h-8 w-8" />
-                    </div>
-                 </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : error ? (

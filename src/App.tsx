@@ -1,4 +1,3 @@
-
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/providers/AuthProvider";
 
 import Layout from "./components/Layout";
-import HomePage from "./pages/HomePage";
+import Dashboard from "./components/Dashboard";
 import ProjectsPage from "./pages/ProjectsPage";
 import LearningPage from "./pages/LearningPage";
 import ResumePage from "./pages/ResumePage";
@@ -20,7 +19,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TooltipProvider>
         <BrowserRouter>
           <AuthProvider>
@@ -28,7 +27,7 @@ const App = () => (
             <Sonner />
             <Layout>
               <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/projects" element={<ProjectsPage />} />
                 <Route path="/learning" element={<LearningPage />} />
                 <Route path="/resume" element={<ResumePage />} />

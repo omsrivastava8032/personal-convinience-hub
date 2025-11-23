@@ -35,13 +35,13 @@ const ProjectsPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <header className="text-center">
-        <h1 className="text-4xl font-bold text-primary">My Projects & Code</h1>
-        <p className="mt-2 text-lg text-muted-foreground">A showcase of my public repositories from GitHub.</p>
+      <header className="text-center mb-12">
+        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-4">My Projects & Code</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">A showcase of my public repositories from GitHub, featuring my latest work and contributions.</p>
       </header>
 
       {/* TODO: Add filters for technology */}
-      
+
       {isLoading && (
         <div className="flex justify-center items-center py-10">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -49,18 +49,18 @@ const ProjectsPage: React.FC = () => {
       )}
 
       {error && (
-         <Alert variant="destructive">
-           <AlertTitle>Error Fetching Projects</AlertTitle>
-           <AlertDescription>
-             Could not fetch repositories from GitHub. Please try again later.
-             <p className="text-xs mt-2 font-mono">{error.message}</p>
-           </AlertDescription>
-         </Alert>
+        <Alert variant="destructive">
+          <AlertTitle>Error Fetching Projects</AlertTitle>
+          <AlertDescription>
+            Could not fetch repositories from GitHub. Please try again later.
+            <p className="text-xs mt-2 font-mono">{error.message}</p>
+          </AlertDescription>
+        </Alert>
       )}
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {repos?.map(repo => (
-          <RepoCard 
+          <RepoCard
             key={repo.id}
             name={repo.name}
             description={repo.description || 'No description available.'}
@@ -72,11 +72,11 @@ const ProjectsPage: React.FC = () => {
           />
         ))}
       </section>
-      
+
       {repos && repos.length > 0 && (
-         <p className="text-center text-muted-foreground italic">
-           Showing the 12 most recently updated projects.
-         </p>
+        <p className="text-center text-muted-foreground italic">
+          Showing the 12 most recently updated projects.
+        </p>
       )}
     </div>
   );

@@ -8,11 +8,11 @@ import ResumeVault from '@/components/ResumeVault';
 const ResumePage: React.FC = () => {
   return (
     <div className="space-y-12">
-      <header className="text-center">
-        <h1 className="text-4xl font-bold text-primary">Resume & Contact</h1>
-        <p className="mt-2 text-lg text-muted-foreground">Manage your resumes and get in touch.</p>
+      <header className="text-center mb-12">
+        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-4">Resume & Contact</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">Manage your professional documents and get in touch with me directly.</p>
       </header>
-      
+
       <section className="max-w-4xl mx-auto">
         <h2 className="text-3xl font-semibold mb-6 text-center">Resume/CV Vault</h2>
         <Auth>
@@ -37,7 +37,7 @@ const ResumePage: React.FC = () => {
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-accent">
             <Github size={28} />
           </a>
-           <a href="mailto:your.email@example.com" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-accent">
+          <a href="mailto:your.email@example.com" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-accent">
             <Mail size={28} />
           </a>
         </div>

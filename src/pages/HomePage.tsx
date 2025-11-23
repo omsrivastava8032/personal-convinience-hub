@@ -1,12 +1,10 @@
 
 import React from 'react';
 import WelcomeBanner from '@/components/WelcomeBanner';
-import QuickLinkCard from '@/components/QuickLinkCard';
 import TodaysSnapshot from '@/components/TodaysSnapshot';
 import { Github, Linkedin, GraduationCap, ListChecks } from 'lucide-react';
 import Scratchpad from '@/components/Scratchpad';
 import CountdownTimer from '@/components/CountdownTimer';
-import { useAuth } from '@/providers/AuthProvider';
 
 const quickLinks = [
   { title: "Striver's DSA Sheet", href: "/learning#dsa", icon: ListChecks, description: "Track my DSA progress on the sheet." },
@@ -16,12 +14,11 @@ const quickLinks = [
 ];
 
 const HomePage: React.FC = () => {
-  const { session } = useAuth();
-  
+
   return (
     <div className="space-y-12">
       <WelcomeBanner />
-      
+
       <div className="w-full max-w-4xl mx-auto">
         <CountdownTimer />
       </div>
@@ -33,7 +30,7 @@ const HomePage: React.FC = () => {
           {quickLinks.map((link, index) => {
             const Icon = link.icon;
             const isExternal = link.href.startsWith('http');
-            
+
             const content = (
               <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm border border-primary/20 p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:scale-[1.02]">
                 <div className="flex items-center justify-between mb-4">
@@ -44,7 +41,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">{link.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{link.description}</p>
-                
+
                 {/* Hover Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
@@ -68,7 +65,7 @@ const HomePage: React.FC = () => {
       </section>
 
       <TodaysSnapshot />
-      
+
       {/* Scratchpad - Full Width Rectangular Section */}
       <section className="w-full">
         <div className="rounded-2xl bg-gradient-to-r from-background/80 to-background/60 backdrop-blur-md border border-border/50 p-8">

@@ -2,9 +2,9 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, BookCopy, Youtube, ExternalLink } from 'lucide-react';
+import { Search, Youtube, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import DsaSheetTracker from '@/components/DsaSheetTracker';
+
 
 const LearningPage: React.FC = () => {
   const cheatSheets = [
@@ -25,13 +25,7 @@ const LearningPage: React.FC = () => {
         <p className="mt-2 text-lg text-muted-foreground">My collection of cheat sheets, notes, and useful resources.</p>
       </header>
 
-      <section id="dsa">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center">
-          <BookCopy className="mr-3 h-6 w-6 text-primary" />
-          Striver’s A2Z DSA Sheet Tracker
-        </h2>
-        <DsaSheetTracker />
-      </section>
+
 
       <section>
         <h2 className="text-2xl font-semibold mb-4 flex items-center">
@@ -68,7 +62,7 @@ const LearningPage: React.FC = () => {
           ))}
         </div>
         <p className="text-sm text-muted-foreground mt-4">
-            Searchable and taggable cheat sheets feature is planned for a future update.
+          Searchable and taggable cheat sheets feature is planned for a future update.
         </p>
       </section>
 

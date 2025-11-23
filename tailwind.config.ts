@@ -1,6 +1,8 @@
 
 import type { Config } from "tailwindcss";
 
+import tailwindAnimate from "tailwindcss-animate";
+
 export default {
 	darkMode: ["class"],
 	content: [
@@ -86,18 +88,18 @@ export default {
 						height: '0'
 					}
 				},
-        'pan-image': {
-          '0%': { backgroundPosition: '0% center' },
-          '50%': { backgroundPosition: '100% center' },
-          '100%': { backgroundPosition: '0% center' },
-        },
+				'pan-image': {
+					'0%': { backgroundPosition: '0% center' },
+					'50%': { backgroundPosition: '100% center' },
+					'100%': { backgroundPosition: '0% center' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-        'pan-image': 'pan-image 90s linear infinite',
+				'pan-image': 'pan-image 90s linear infinite',
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [tailwindAnimate],
 } satisfies Config;
