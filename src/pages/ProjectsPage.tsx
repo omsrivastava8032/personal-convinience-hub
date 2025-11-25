@@ -19,7 +19,7 @@ interface GitHubRepo {
 }
 
 const fetchRepos = async (): Promise<GitHubRepo[]> => {
-  const response = await fetch('https://api.github.com/users/omsri8032/repos?sort=pushed&per_page=12');
+  const response = await fetch('https://api.github.com/users/omsri8032/repos?sort=pushed&per_page=100');
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || 'Failed to fetch GitHub repositories');
@@ -31,6 +31,7 @@ const ProjectsPage: React.FC = () => {
   const { data: repos, isLoading, error } = useQuery<GitHubRepo[], Error>({
     queryKey: ['githubRepos-omsri8032'],
     queryFn: fetchRepos,
+    refetchInterval: 60000, // Auto-refresh every 60 seconds to catch new repos
   });
 
   return (
@@ -75,7 +76,7 @@ const ProjectsPage: React.FC = () => {
 
       {repos && repos.length > 0 && (
         <p className="text-center text-muted-foreground italic">
-          Showing the 12 most recently updated projects.
+          Showing all {repos.length} repositories • Auto-refreshes every minute
         </p>
       )}
     </div>
